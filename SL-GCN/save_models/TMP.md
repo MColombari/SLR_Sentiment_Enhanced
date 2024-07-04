@@ -1,0 +1,1 @@
+This folder is required for the correct execution of this package.

@@ -1,0 +1,64 @@
+Experiment_name: bone_motion_27_2_test
+base_lr: 0.01
+batch_size: 64
+config: config/sign/test/test_bone_motion.yaml
+device:
+- 0
+- 1
+eval_interval: 5
+feeder: feeders.feeder.Feeder
+groups: 8
+ignore_weights: []
+keep_rate: 0.9
+log_interval: 100
+model: model.decouple_gcn_attn.Model
+model_args:
+  block_size: 41
+  graph: graph.sign_27.Graph
+  graph_args:
+    labeling_mode: spatial
+  groups: 16
+  num_class: 226
+  num_person: 1
+  num_point: 27
+model_saved_name: ./save_models/bone_motion_27_2_test
+nesterov: true
+num_epoch: 100
+num_worker: 32
+only_train_epoch: 1
+only_train_part: true
+optimizer: SGD
+phase: test
+print_log: true
+save_interval: 2
+save_score: false
+seed: 1
+show_topk:
+- 1
+- 5
+start_epoch: 0
+step:
+- 50
+test_batch_size: 64
+test_feeder_args:
+  data_path: /work/cvcs2024/SLR_sentiment_enhanced/datasets/AUTSL/Pre-processed/skeleton/train_data_bone_motion.npy
+  debug: false
+  is_vector: true
+  label_path: /work/cvcs2024/SLR_sentiment_enhanced/datasets/AUTSL/Pre-processed/skeleton/train_label.pkl
+  normalization: true
+  random_mirror: false
+train_feeder_args:
+  data_path: /work/cvcs2024/SLR_sentiment_enhanced/datasets/AUTSL/Pre-processed/skeleton/train_data_bone_motion.npy
+  debug: false
+  is_vector: true
+  label_path: /work/cvcs2024/SLR_sentiment_enhanced/datasets/AUTSL/Pre-processed/skeleton/train_label.pkl
+  normalization: true
+  random_choose: true
+  random_mirror: true
+  random_mirror_p: 0.5
+  random_shift: true
+  window_size: 100
+warm_up_epoch: 0
+weight_decay: 0.0001
+weights: weights/27_2/bone_epoch_239_9470.pt
+work_dir: ./work_dir/bone_motion_27_2_test

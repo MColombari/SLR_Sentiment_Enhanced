@@ -1,0 +1,2 @@
+[ Thu Jul  4 16:24:16 2024 ] Load weights from weights/27_2/bone_epoch_239_9470.pt.
+[ Thu Jul  4 16:29:18 2024 ] Load weights from weights/27_2/bone_epoch_239_9470.pt.
