@@ -50,20 +50,20 @@ def main():
         config = './wholebody_w48_384x384_adam_lr1e-3.yaml'
         cfg.merge_from_file(config)
         device = torch.device("cuda")
-        model = get_pose_net(cfg, is_train=False)
-        checkpoint = torch.load(
-    '/work/cvcs2024/SLR_sentiment_enhanced/model_weights/SSTCN/wholebody_hrnet_w48_384x384.pth', map_location="cuda:0")
-        model.load_state_dict(checkpoint)
-        model.to(device)
-        model.eval()
+    #     model = get_pose_net(cfg, is_train=False)
+    #     checkpoint = torch.load(
+    # '/work/cvcs2024/SLR_sentiment_enhanced/model_weights/SSTCN/wholebody_hrnet_w48_384x384.pth', map_location="cuda:0")
+    #     model.load_state_dict(checkpoint)
+    #     model.to(device)
+    #     model.eval()
         print("start extraction!")
         filelist = list(glob.iglob(videopath))
         for filename in tqdm(filelist):
           output_filename = opt.feature_path+'/'+filename[lenstr:-4] + '.pt'
           frames = []
           frames_flip = []
-          cap = cv2.VideoCapture(filename)
           length = video_lenght(filename)
+          cap = cv2.VideoCapture(filename)
           fps = cap.get(cv2.CAP_PROP_FPS)
           index = 0
           space = 0
