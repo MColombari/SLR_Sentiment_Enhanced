@@ -9,4 +9,4 @@
 #SBATCH --output="run_output/output.log"
 #SBATCH --error="run_output/error.log"
 
-python3 main.py --config="config/sign/test/test_bone_motion.yaml"
+python3 main_process.sh --config="config/sign/test/test_bone_motion.yaml"
