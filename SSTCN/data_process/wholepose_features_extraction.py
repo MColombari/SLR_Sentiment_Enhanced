@@ -1,4 +1,3 @@
-
 from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
@@ -22,6 +21,22 @@ from config import update_config
 
 import torchvision.transforms as transforms
 from tqdm import tqdm
+
+
+def video_lenght(video_path):
+    video_capture = cv2.VideoCapture(video_path)
+    video_length = int(video_capture.get(cv2.CAP_PROP_FRAME_COUNT))
+
+    count = 0
+    while(True):
+        # Capture frame-by-frame
+        ret, frame = video_capture.read()
+        if not ret:
+            break
+        count += 1
+    return count
+
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--video_path", type=str, default="../data/color_test", help="Path to input dataset")
@@ -45,11 +60,12 @@ def main():
         print("start extraction!")
         filelist = list(glob.iglob(videopath))
         for filename in tqdm(filelist):
+          print(filename)
           output_filename = opt.feature_path+'/'+filename[lenstr:-4] + '.pt'
           frames = []
           frames_flip = []
           cap = cv2.VideoCapture(filename)
-          length = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
+          length = video_lenght(filename)
           fps = cap.get(cv2.CAP_PROP_FPS)
           index = 0
           space = 0
@@ -80,6 +96,7 @@ def main():
             image_flip = image_flip.transpose((2,0,1))
 ################## clip videos ################################################
             if length < 60:
+                print('Less then 60')
                 num_to_repeat = int(60/length)
                 space = 1
                 if 60-length*num_to_repeat>0:
@@ -98,9 +115,11 @@ def main():
                         frames_flip.append(image_flip)
                     break
             elif length == 60:
+                print('Equal then 60')
                 frames.append(image)
                 frames_flip.append(image_flip)
             else:
+                print('More then 60')
                 space = int(length/(length-60))
                 if index % space == 0 and index < length - (length % (length-60)):
                     index += 1
@@ -130,6 +149,7 @@ def main():
               output_filename = opt.feature_path+'/'+filename[lenstr:-4] + '_flip.pt'
               torch.save(newout,output_filename)
           if len(frames)!=60:
+              print('Break')
               break
           cap.release()
 
