@@ -19,5 +19,5 @@ cd ..
 ####### training #############################
 python train_parallel.py --batch_size 160
 ###### testing ###########################
-python test.py
+python test.py --checkpoint_model /work/cvcs2024/SLR_sentiment_enhanced/model_weights/SSTCN/T_Pose_model_final.pth
 #python test.py --checkpoint_model model_checkpoints/your model

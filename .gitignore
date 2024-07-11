@@ -116,4 +116,4 @@ dmypy.json
 
 
 # My gitignore
-.SSTCN/data/train_features/
+SSTCN/data/train_features/*
