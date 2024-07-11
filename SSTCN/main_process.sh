@@ -8,10 +8,10 @@
 ######change path_to_val_videos to your real path for val videos#####################
 # mv path_to_val_videos/*color* val_videos/
 
-# cd data_process
-python data_process/wholepose_features_extraction.py --video_path /work/cvcs2024/SLR_sentiment_enhanced/datasets/WLASL/WLASL/start_kit/data/train --feature_path data/train_features --is_train True
-python data_process/wholepose_features_extraction.py --video_path /work/cvcs2024/SLR_sentiment_enhanced/datasets/WLASL/WLASL/start_kit/data/val --feature_path data/train_features
-# cd ..
+cd data_process
+python wholepose_features_extraction.py --video_path /work/cvcs2024/SLR_sentiment_enhanced/datasets/WLASL/WLASL/start_kit/data/train --feature_path ../data/train_features --istrain True
+python wholepose_features_extraction.py --video_path /work/cvcs2024/SLR_sentiment_enhanced/datasets/WLASL/WLASL/start_kit/data/val --feature_path ../data/train_features
+cd ..
 # if you want to delete videos, un common the following command
 #rm -rf train_videos
 #rm -rf val_videos

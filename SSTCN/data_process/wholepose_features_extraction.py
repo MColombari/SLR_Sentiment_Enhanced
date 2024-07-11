@@ -38,7 +38,7 @@ def main():
         device = torch.device("cuda")
         model = get_pose_net(cfg, is_train=False)
         checkpoint = torch.load(
-    './wholebody_hrnet_w48_384x384.pth', map_location="cuda:0")
+    '/work/cvcs2024/SLR_sentiment_enhanced/model_weights/SSTCN/wholebody_hrnet_w48_384x384.pth', map_location="cuda:0")
         model.load_state_dict(checkpoint)
         model.to(device)
         model.eval()
