@@ -50,12 +50,12 @@ def main():
         config = './wholebody_w48_384x384_adam_lr1e-3.yaml'
         cfg.merge_from_file(config)
         device = torch.device("cuda")
-    #     model = get_pose_net(cfg, is_train=False)
-    #     checkpoint = torch.load(
-    # '/work/cvcs2024/SLR_sentiment_enhanced/model_weights/SSTCN/wholebody_hrnet_w48_384x384.pth', map_location="cuda:0")
-    #     model.load_state_dict(checkpoint)
-    #     model.to(device)
-    #     model.eval()
+        model = get_pose_net(cfg, is_train=False)
+        checkpoint = torch.load(
+            '/work/cvcs2024/SLR_sentiment_enhanced/model_weights/SSTCN/wholebody_hrnet_w48_384x384.pth', map_location="cuda:0")
+        model.load_state_dict(checkpoint)
+        model.to(device)
+        model.eval()
         print("start extraction!")
         filelist = list(glob.iglob(videopath))
         for filename in tqdm(filelist):
@@ -63,11 +63,13 @@ def main():
           frames = []
           frames_flip = []
           length = video_lenght(filename)
+          print(f'\n{filename}: {length}frames')
           cap = cv2.VideoCapture(filename)
           fps = cap.get(cv2.CAP_PROP_FPS)
           index = 0
           space = 0
           num_frame = 0
+          skipped_frame = 0
           while cap.isOpened():
           
 ################## process image #############################################
@@ -77,6 +79,7 @@ def main():
             else:
 #              print("Ignoring empty camera frame.")
               # If loading a video, use 'break' instead of 'continue'.
+              print('Break')
               break
             image = cv2.resize(image,(384,384))
             image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
@@ -117,6 +120,7 @@ def main():
             else:
                 space = int(length/(length-60))
                 if index % space == 0 and index < length - (length % (length-60)):
+                    skipped_frame += 1
                     index += 1
                     continue
                 index += 1
@@ -143,6 +147,8 @@ def main():
               newout = newout.view(1,-1,24,24)
               output_filename = opt.feature_path+'/'+filename[lenstr:-4] + '_flip.pt'
               torch.save(newout,output_filename)
+          print(f'{skipped_frame} skipped frame')
+          print(f'frames at the end {len(frames)}\n counted one {num_frame}')
           if len(frames)!=60:
               break
           cap.release()
