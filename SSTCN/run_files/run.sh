@@ -4,14 +4,14 @@
 #SBATCH --job-name=test_repo
 #SBATCH --partition=all_usr_prod
 #SBATCH --gres=gpu:2
-#SBATCH --time=1:00:00
+#SBATCH --time=8:00:00
 
 #SBATCH --output="run_output/output.log"
 #SBATCH --error="run_output/error.log"
 
 cd data_process
-python wholepose_features_extraction.py --video_path /work/cvcs2024/SLR_sentiment_enhanced/datasets/WLASL/WLASL/start_kit/data/train --feature_path ../data/train_features --istrain True
-python wholepose_features_extraction.py --video_path /work/cvcs2024/SLR_sentiment_enhanced/datasets/WLASL/WLASL/start_kit/data/val --feature_path ../data/train_features
+python wholepose_features_extraction.py --video_path /work/cvcs2024/SLR_sentiment_enhanced/datasets/WLASL/WLASL/start_kit/data/train --feature_path /work/cvcs2024/SLR_sentiment_enhanced/SLRSE_model_data/SSTCN/data/train_features --istrain True
+python wholepose_features_extraction.py --video_path /work/cvcs2024/SLR_sentiment_enhanced/datasets/WLASL/WLASL/start_kit/data/val --feature_path /work/cvcs2024/SLR_sentiment_enhanced/SLRSE_model_data/SSTCN/data/train_features
     #cd ..
 # if you want to delete videos, un common the following command
 #rm -rf train_videos
