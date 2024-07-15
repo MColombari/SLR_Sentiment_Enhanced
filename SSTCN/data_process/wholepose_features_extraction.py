@@ -61,6 +61,11 @@ def main():
         for filename in tqdm(filelist):
           # filename[lenstr:-4] returns --> /signer5_sample71_color
           output_filename = opt.feature_path+filename[lenstr:-4] + '.pt'
+          
+          if os.path.exists(output_filename):
+            print('{} exists.'.format(output_filename))
+            continue
+          
           frames = []
           frames_flip = []
           length = video_lenght(filename)
