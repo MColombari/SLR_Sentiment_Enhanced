@@ -59,7 +59,8 @@ def main():
         print("start extraction!")
         filelist = list(glob.iglob(videopath))
         for filename in tqdm(filelist):
-          output_filename = opt.feature_path+'/'+filename[lenstr:-4] + '.pt'
+          # filename[lenstr:-4] returns --> /signer5_sample71_color
+          output_filename = opt.feature_path+filename[lenstr:-4] + '.pt'
           frames = []
           frames_flip = []
           length = video_lenght(filename)
