@@ -13,4 +13,4 @@
 python train_parallel.py \
     --dataset_path /work/cvcs2024/SLR_sentiment_enhanced/SLRSE_model_data/SSTCN/data/train_features \
     --save_path /work/cvcs2024/SLR_sentiment_enhanced/SLRSE_model_data/SSTCN/model_checkpoints \
-    --batch_size 160
+    --batch_size 60

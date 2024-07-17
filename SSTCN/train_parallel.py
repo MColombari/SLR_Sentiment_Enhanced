@@ -29,11 +29,11 @@ if __name__ == "__main__":
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     # Define training set
     train_dataset = SimplerTorchDataset(istrain=True, fea_dir=opt.dataset_path, isaug = True, repeat=1)
-    train_dataloader = DataLoader(train_dataset, batch_size=opt.batch_size, shuffle=True, num_workers=32,pin_memory=True)
+    train_dataloader = DataLoader(train_dataset, batch_size=opt.batch_size, shuffle=True, num_workers=12,pin_memory=True)
 
     # Define test set
     test_dataset = SimplerTorchDataset(istrain=False, fea_dir=opt.dataset_path, repeat=1)
-    test_dataloader = DataLoader(test_dataset, batch_size=opt.batch_size, shuffle=False, num_workers=32,pin_memory=True)
+    test_dataloader = DataLoader(test_dataset, batch_size=opt.batch_size, shuffle=False, num_workers=12,pin_memory=True)
 
     # Classification criterion
     #cls_criterion = nn.CrossEntropyLoss().to(device)

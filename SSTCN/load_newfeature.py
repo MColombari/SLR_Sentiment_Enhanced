@@ -116,8 +116,8 @@ class SimplerTorchDataset(Dataset):
         # file name of training and testing samples
         self.train_file_name = self.mat['train_file_name']
         self.test_file_name = self.mat['test_file_name']
-        self.train_label = self.mat['train_label']
-        self.test_label = self.mat['test_label']
+        self.train_label = self.mat['train_label'][0]
+        self.test_label = self.mat['test_label'][0]
         self.train_number = self.mat['train_count'][0][0]
         self.test_number = self.mat['test_count'][0][0]
         self.fea_label_list = self.read_file()
@@ -149,7 +149,6 @@ class SimplerTorchDataset(Dataset):
         if self.istrain:
             for idx in range(self.train_number):
               name = self.train_file_name[idx].strip()+ '_color'+ '.pt'
-              print(name)
               labels = self.train_label[idx]
               fea_label_list.append((name, labels))
               name = self.train_file_name[idx].strip()+ '_color'+ '_flip.pt'
