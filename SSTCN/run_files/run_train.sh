@@ -10,7 +10,7 @@
 #SBATCH --error="run_output/error_train.log"
 
 ####### training #############################
-python train_parallel.py \\
-    -dataset_path /work/cvcs2024/SLR_sentiment_enhanced/SLRSE_model_data/SSTCN/data/test_feature \\
-    --save_path /work/cvcs2024/SLR_sentiment_enhanced/SLRSE_model_data/SSTCN/model_checkpoints \\
+python train_parallel.py \
+    --dataset_path /work/cvcs2024/SLR_sentiment_enhanced/SLRSE_model_data/SSTCN/data/train_features \
+    --save_path /work/cvcs2024/SLR_sentiment_enhanced/SLRSE_model_data/SSTCN/model_checkpoints \
     --batch_size 160

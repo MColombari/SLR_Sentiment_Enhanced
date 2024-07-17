@@ -109,7 +109,7 @@ class SimplerTorchDataset(Dataset):
     fea_dir,
     isaug=False,# set True for training, False for finetuning
     repeat=1):
-        self.load_name = './train_val_split.mat'
+        self.load_name = './train_val_split_WLASL.mat'
         self.mat = scipy.io.loadmat(self.load_name)
         self.istrain = istrain
         self.isaug = isaug
@@ -118,10 +118,8 @@ class SimplerTorchDataset(Dataset):
         self.test_file_name = self.mat['test_file_name']
         self.train_label = self.mat['train_label']
         self.test_label = self.mat['test_label']
-        self.train_number = self.mat['train_count']
-        self.test_number = self.mat['test_count']
-        self.train_number = self.train_number
-        self.test_number = self.test_number
+        self.train_number = self.mat['train_count'][0][0]
+        self.test_number = self.mat['test_count'][0][0]
         self.fea_label_list = self.read_file()
         if self.istrain:
            random.shuffle(self.fea_label_list)
@@ -132,6 +130,7 @@ class SimplerTorchDataset(Dataset):
     def __getitem__(self, i):
         index = i % self.len
         fea_name, label = self.fea_label_list[index]
+        print(f'fea_name:{fea_name}, label:{label}')
         fea_path = os.path.join(self.fea_dir, fea_name)
         features = self.load_data(fea_path)
         label=np.array(label)
@@ -149,10 +148,11 @@ class SimplerTorchDataset(Dataset):
         fea_label_list = []
         if self.istrain:
             for idx in range(self.train_number):
-              name = self.train_file_name[idx]+ '_color'+ '.pt'
+              name = self.train_file_name[idx].strip()+ '_color'+ '.pt'
+              print(name)
               labels = self.train_label[idx]
               fea_label_list.append((name, labels))
-              name = self.train_file_name[idx]+ '_color'+ '_flip.pt'
+              name = self.train_file_name[idx].strip()+ '_color'+ '_flip.pt'
               labels = self.train_label[idx]
               fea_label_list.append((name, labels))
         else:
