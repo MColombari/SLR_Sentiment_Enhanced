@@ -6,7 +6,7 @@ import numpy as np
 TRAIN_LABEL_FILE_PATH = '/work/cvcs2024/SLR_sentiment_enhanced/datasets/WLASL/WLASL/start_kit/labels/train_labels.csv'
 VAL_LABEL_FILE_PATH = '/work/cvcs2024/SLR_sentiment_enhanced/datasets/WLASL/WLASL/start_kit/labels/val_labels.csv'
 
-REMOVED_FILES = ['signer11_sample59', 'signer31_sample81']
+REMOVED_FILES = ['signer11_sample59', 'signer31_sample81','signer5_sample1557']
 
 out_dict = {}
 out_dict['test_count'] = 0
@@ -43,5 +43,5 @@ with open(VAL_LABEL_FILE_PATH, newline='\n') as csvfile:
         out_dict['test_file_name'].append(name)
         out_dict['test_label'].append(int(label))
 
-scipy.io.savemat('/homes/mcolombari/SLR_Sentiment_Enhanced/SSTCN/train_val_split_WLASL.mat', mdict=out_dict)
+scipy.io.savemat('./train_val_split_WLASL.mat', mdict=out_dict)
 print('done')

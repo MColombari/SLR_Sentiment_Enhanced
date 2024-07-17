@@ -106,13 +106,14 @@ class TorchDataset(Dataset):
 class SimplerTorchDataset(Dataset):
     def __init__(self,
     istrain,
-    fea_dir,
+    fea_dir, # features dir
     isaug=False,# set True for training, False for finetuning
     repeat=1):
         self.load_name = './train_val_split_WLASL.mat'
         self.mat = scipy.io.loadmat(self.load_name)
         self.istrain = istrain
         self.isaug = isaug
+        self.fea_dir = fea_dir 
         # file name of training and testing samples
         self.train_file_name = self.mat['train_file_name']
         self.test_file_name = self.mat['test_file_name']
@@ -120,17 +121,16 @@ class SimplerTorchDataset(Dataset):
         self.test_label = self.mat['test_label'][0]
         self.train_number = self.mat['train_count'][0][0]
         self.test_number = self.mat['test_count'][0][0]
+        
         self.fea_label_list = self.read_file()
         if self.istrain:
            random.shuffle(self.fea_label_list)
-        self.fea_dir = fea_dir
         self.len = len(self.fea_label_list)
         self.repeat = repeat
         
     def __getitem__(self, i):
         index = i % self.len
         fea_name, label = self.fea_label_list[index]
-        print(f'fea_name:{fea_name}, label:{label}')
         fea_path = os.path.join(self.fea_dir, fea_name)
         features = self.load_data(fea_path)
         label=np.array(label)
@@ -151,12 +151,13 @@ class SimplerTorchDataset(Dataset):
               name = self.train_file_name[idx].strip()+ '_color'+ '.pt'
               labels = self.train_label[idx]
               fea_label_list.append((name, labels))
+              # check if the flipped sample exists 
               name = self.train_file_name[idx].strip()+ '_color'+ '_flip.pt'
-              labels = self.train_label[idx]
-              fea_label_list.append((name, labels))
+              if os.path.exists(os.path.join(self.fea_dir, name)):
+                fea_label_list.append((name, labels))
         else:
             for idx in range(self.test_number):
-              name = self.test_file_name[idx]+ '_color'+ '.pt'
+              name = self.test_file_name[idx].strip()+ '_color'+ '.pt'
               labels = int(self.test_label[idx])
               fea_label_list.append((name, labels))
         return fea_label_list
