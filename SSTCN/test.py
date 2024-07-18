@@ -8,19 +8,23 @@ import torch.nn.parallel
 import argparse
 import pickle
 from tqdm import tqdm
+
+NUM_CLASSES = 2000
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--dataset_path", type=str, default="./data/new_test_24x24", help="Path to input dataset")
     parser.add_argument("--checkpoint_model", type=str, default="./T_Pose_model_final.pth", help="Optional path to checkpoint model")
+    parser.add_argument("--test_labels", type=str, default="./test_labels_pseudo.pkl", help="path for input test labels")
 
     opt = parser.parse_args()
     print(opt)
-    test_files = open('test_labels_pseudo.pkl', 'rb')
+    test_files = open(opt.test_labels, 'rb')
     test_files = np.array(pickle.load(test_files))
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
     model = T_Pose_model(frames_number=60,joints_number=33,
-        n_classes=226
+        n_classes=NUM_CLASSES
     )
     #model = nn.DataParallel(model)    
     model = model.to(device)
@@ -34,7 +38,7 @@ if __name__ == "__main__":
     preds =[]
     names = []
     index = 0
-    for name in tqdm(test_files[0]):
+    for name in tqdm(test_files):
         names.append(name)
         fea_name = name+'_color.pt'
         fea_path = os.path.join(opt.dataset_path, fea_name)
@@ -45,7 +49,8 @@ if __name__ == "__main__":
              pred=model(data_in)
         pred = pred.cpu().detach().numpy()
         preds.append(pred)
-    with open('./T_Pose_model_test.pkl', 'wb') as f:
+        
+    with open('/work/cvcs2024/SLR_sentiment_enhanced/SLRSE_model_data/SSTCN/T_Pose_model_test.pkl', 'wb') as f:
          score_dict = dict(zip(names, preds))
          pickle.dump(score_dict, f)
 

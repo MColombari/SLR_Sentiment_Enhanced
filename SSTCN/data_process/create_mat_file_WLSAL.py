@@ -2,6 +2,9 @@ import scipy
 import csv
 import numpy as np
 
+"""
+Create the .mat file for the training phase
+"""
 
 TRAIN_LABEL_FILE_PATH = '/work/cvcs2024/SLR_sentiment_enhanced/datasets/WLASL/WLASL/start_kit/labels/train_labels.csv'
 VAL_LABEL_FILE_PATH = '/work/cvcs2024/SLR_sentiment_enhanced/datasets/WLASL/WLASL/start_kit/labels/val_labels.csv'
