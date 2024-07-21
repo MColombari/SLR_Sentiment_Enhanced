@@ -29,17 +29,17 @@ class LabelSmoothingCrossEntropy(nn.Module):
 
 # Path setting
 exp_name = 'rgb_final'
-data_path = "../data/train_frames"
-data_path2 = "../data/val_frames"
-label_train_path = "data/train_labels.csv"
-label_val_path = "data/val_gt.csv"
-model_path = "checkpoint/{}".format(exp_name)
+data_path = "/work/cvcs2024/SLR_sentiment_enhanced/SLRSE_model_data/data-prepare/train_frames/WLASL"
+data_path2 = "/work/cvcs2024/SLR_sentiment_enhanced/SLRSE_model_data/data-prepare/val_frames/WLASL"
+label_train_path = "/work/cvcs2024/SLR_sentiment_enhanced/datasets/WLASL/WLASL/start_kit/labels/train_labels.csv"
+label_val_path = "/work/cvcs2024/SLR_sentiment_enhanced/datasets/WLASL/WLASL/start_kit/labels/val_labels.csv"
+model_path = "/work/cvcs2024/SLR_sentiment_enhanced/SLRSE_model_data/Conv3D/model/checkpoint/{}".format(exp_name)
 if not os.path.exists(model_path):
     os.mkdir(model_path)
 if not os.path.exists(os.path.join('results', exp_name)):
     os.mkdir(os.path.join('results', exp_name))
-log_path = "log/sign_resnet2d+1_{}_{:%Y-%m-%d_%H-%M-%S}.log".format(exp_name, datetime.now())
-sum_path = "runs/sign_resnet2d+1_{}_{:%Y-%m-%d_%H-%M-%S}".format(exp_name, datetime.now())
+log_path = "/work/cvcs2024/SLR_sentiment_enhanced/SLRSE_model_data/Conv3D/log/sign_resnet2d+1_{}_{:%Y-%m-%d_%H-%M-%S}.log".format(exp_name, datetime.now())
+sum_path = "/work/cvcs2024/SLR_sentiment_enhanced/SLRSE_model_data/Conv3D/runs/sign_resnet2d+1_{}_{:%Y-%m-%d_%H-%M-%S}".format(exp_name, datetime.now())
 phase = 'Train'
 # Log to file & tensorboard writer
 logging.basicConfig(level=logging.INFO, format='%(message)s', handlers=[logging.FileHandler(log_path), logging.StreamHandler()])
@@ -85,9 +85,9 @@ if __name__ == '__main__':
     val_loader = DataLoader(val_set, batch_size=batch_size, shuffle=False, num_workers=24, pin_memory=True)
     # Create model
 
-    model = r2plus1d_18(pretrained=True, num_classes=500)
+    model = r2plus1d_18(pretrained=True, num_classes=2000)
     # load pretrained
-    checkpoint = torch.load('pretrained/slr_resnet2d+1.pth')
+    checkpoint = torch.load('/work/cvcs2024/SLR_sentiment_enhanced/model_weights/3D_conv/pretrained/slr_resnet2d+1.pth')
     new_state_dict = OrderedDict()
     for k, v in checkpoint.items():
         name = k[7:] # remove 'module.'
