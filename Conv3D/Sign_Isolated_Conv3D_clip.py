@@ -29,6 +29,7 @@ class LabelSmoothingCrossEntropy(nn.Module):
 
 # Path setting
 exp_name = 'rgb_final'
+result_path = '/work/cvcs2024/SLR_sentiment_enhanced/SLRSE_model_data/Conv3D/results'
 data_path = "/work/cvcs2024/SLR_sentiment_enhanced/SLRSE_model_data/data-prepare/train_frames/WLASL"
 data_path2 = "/work/cvcs2024/SLR_sentiment_enhanced/SLRSE_model_data/data-prepare/val_frames/WLASL"
 label_train_path = "/work/cvcs2024/SLR_sentiment_enhanced/datasets/WLASL/WLASL/start_kit/labels/train_labels.csv"
@@ -36,8 +37,8 @@ label_val_path = "/work/cvcs2024/SLR_sentiment_enhanced/datasets/WLASL/WLASL/sta
 model_path = "/work/cvcs2024/SLR_sentiment_enhanced/SLRSE_model_data/Conv3D/model/checkpoint/{}".format(exp_name)
 if not os.path.exists(model_path):
     os.mkdir(model_path)
-if not os.path.exists(os.path.join('results', exp_name)):
-    os.mkdir(os.path.join('results', exp_name))
+if not os.path.exists(os.path.join(result_path, exp_name)):
+    os.mkdir(os.path.join(result_path, exp_name))
 log_path = "/work/cvcs2024/SLR_sentiment_enhanced/SLRSE_model_data/Conv3D/log/sign_resnet2d+1_{}_{:%Y-%m-%d_%H-%M-%S}.log".format(exp_name, datetime.now())
 sum_path = "/work/cvcs2024/SLR_sentiment_enhanced/SLRSE_model_data/Conv3D/runs/sign_resnet2d+1_{}_{:%Y-%m-%d_%H-%M-%S}".format(exp_name, datetime.now())
 phase = 'Train'
