@@ -49,7 +49,7 @@ logger.info('Logging to file...')
 writer = SummaryWriter(sum_path)
 
 # Use specific gpus
-# os.environ["CUDA_VISIBLE_DEVICES"]="2,34,5,6,7"
+# os.environ["CUDA_VISIBLE_DEVICES"]="2,3,4,5,6,7"
 os.environ["CUDA_VISIBLE_DEVICES"]="0,1"
 # Device setting
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
