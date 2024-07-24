@@ -34,7 +34,7 @@ class r2plus1d_18(nn.Module):
         super(r2plus1d_18, self).__init__()
         self.pretrained = pretrained
         self.num_classes = num_classes
-        model = torchvision.models.video.r2plus1d_18(pretrained=self.pretrained)
+        model = torchvision.models.video.r2plus1d_18(weights=self.pretrained)
         # delete the last fc layer
         modules = list(model.children())[:-1]
         # print(modules)

@@ -2,6 +2,7 @@ import os
 import sys
 from datetime import datetime
 import logging
+os.environ["CUDA_VISIBLE_DEVICES"]="0,1"
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
@@ -50,7 +51,7 @@ writer = SummaryWriter(sum_path)
 
 # Use specific gpus
 # os.environ["CUDA_VISIBLE_DEVICES"]="2,3,4,5,6,7"
-os.environ["CUDA_VISIBLE_DEVICES"]="0,1"
+
 # Device setting
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
@@ -119,6 +120,8 @@ if __name__ == '__main__':
             # Train the model
             train_epoch(model, criterion, optimizer, train_loader, device, epoch, logger, log_interval, writer)
 
+
+            logger.info("Start validation".center(60, '#'))
             # Validate the model
             val_loss = val_epoch(model, criterion, val_loader, device, epoch, logger, writer)
             scheduler.step(val_loss)

@@ -27,9 +27,10 @@ class Sign_Isolated(Dataset):
             line = line.strip()
             line = line.split(',')
 
-            self.sample_names.append(line[0])
-            self.data_folder.append(os.path.join(data_path, line[0]))
-            self.labels.append(int(line[1]))
+            if os.path.exists(os.path.join(data_path, line[0])):
+                self.sample_names.append(line[0])
+                self.data_folder.append(os.path.join(data_path, line[0]))
+                self.labels.append(int(line[1]))
 
     def frame_indices_tranform(self, video_length, sample_duration):
         if video_length > sample_duration:
