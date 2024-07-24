@@ -87,7 +87,7 @@ if __name__ == '__main__':
     val_loader = DataLoader(val_set, batch_size=batch_size, shuffle=False, num_workers=24, pin_memory=True)
     # Create model
 
-    model = r2plus1d_18(pretrained=True, num_classes=2000)
+    model = r2plus1d_18(pretrained=True, num_classes=500)
     # load pretrained
     checkpoint = torch.load('/work/cvcs2024/SLR_sentiment_enhanced/model_weights/3D_conv/pretrained/slr_resnet2d+1.pth')
     new_state_dict = OrderedDict()
