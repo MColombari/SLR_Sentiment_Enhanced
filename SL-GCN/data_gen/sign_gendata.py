@@ -33,11 +33,12 @@ def gendata(data_path, label_path, out_path, part='train', config='27'):
         line = line.strip()
         line = line.split(',')
 
-        sample_names.append(line[0])
-        data.append(os.path.join(data_path, line[0] + '_color.mp4.npy'))
-        # print(line[1])
-        labels.append(int(line[1]))
-        # print(labels[-1])
+        if os.path.exists(os.path.join(data_path, line[0] + '_color.mp4.npy')):
+            sample_names.append(line[0])
+            data.append(os.path.join(data_path, line[0] + '_color.mp4.npy'))
+            # print(line[1])
+            labels.append(int(line[1]))
+            # print(labels[-1])
 
     fp = np.zeros((len(data), max_frame, num_joints, num_channels, max_body_true), dtype=np.float32)
 
@@ -80,9 +81,10 @@ if __name__ == '__main__':
     parser.add_argument('--data_path', default='/data/sign/test_npy/npy') #'train_npy/npy', 'va_npy/npy'
     parser.add_argument('--label_path', default='../data/sign/27/train_labels.csv') # 'train_labels.csv', 'val_gt.csv', 'test_labels.csv'
     parser.add_argument('--out_folder', default='../data/sign/')
+    parser.add_argument('--part', default='train')
     parser.add_argument('--points', default='27')
 
-    part = 'test' # 'train', 'val'
+    
     arg = parser.parse_args()
 
     out_path = os.path.join(arg.out_folder, arg.points)
@@ -94,5 +96,5 @@ if __name__ == '__main__':
         arg.data_path,
         arg.label_path,
         out_path,
-        part=part,
+        part=arg.part,
         config=arg.points)

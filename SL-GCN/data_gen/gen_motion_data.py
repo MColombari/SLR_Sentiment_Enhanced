@@ -8,7 +8,7 @@ sets = {
 }
 
 datasets = {
-    'sign/27_2'
+    'sign/27'
 }
 
 parts = {
@@ -20,11 +20,11 @@ for dataset in datasets:
     for set in sets:
         for part in parts:
             print(dataset, set, part)
-            data = np.load('../data/{}/{}_data_{}.npy'.format(dataset, set, part))
+            data = np.load('/work/cvcs2024/SLR_sentiment_enhanced/SLRSE_model_data/SL-GCN/{}/{}_data_{}.npy'.format(dataset, set, part))
             N, C, T, V, M = data.shape
             print(data.shape)
             fp_sp = open_memmap(
-                '../data/{}/{}_data_{}_motion.npy'.format(dataset, set, part),
+                '/work/cvcs2024/SLR_sentiment_enhanced/SLRSE_model_data/SL-GCN/{}/{}_data_{}_motion.npy'.format(dataset, set, part),
                 dtype='float32',
                 mode='w+',
                 shape=(N, C, T, V, M))
