@@ -117,3 +117,8 @@ dmypy.json
 
 # My gitignore
 SSTCN/data/train_features/*
+SL-GCN/data/sign/27_2/train_label.pkl
+SL-GCN/data/sign/27_2/val_label.pkl
+SL-GCN/save_models/sign_bone_motion_final-0.pt
+SL-GCN/data/sign/27_2/train_data_bone_motion.npy
+SL-GCN/data/sign/27_2/val_data_bone_motion.npy
