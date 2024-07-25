@@ -30,9 +30,10 @@ class Swish(nn.Module):
         return x.mul_(torch.sigmoid(x))
 
 class r2plus1d_18(nn.Module):
-    def __init__(self, pretrained=True, num_classes=500, dropout_p=0.5):
+    def __init__(self, pretrained=True, num_classes=2000, dropout_p=0.5):
         super(r2plus1d_18, self).__init__()
-        self.pretrained = pretrained
+
+        self.pretrained =  "R2Plus1D_18_Weights.DEFAULT" if pretrained == True else False
         self.num_classes = num_classes
         model = torchvision.models.video.r2plus1d_18(weights=self.pretrained)
         # delete the last fc layer
@@ -53,7 +54,7 @@ class r2plus1d_18(nn.Module):
         return out
 
 class flow_r2plus1d_18(nn.Module):
-    def __init__(self, pretrained=False, num_classes=500, dropout_p=0.5):
+    def __init__(self, pretrained=False, num_classes=2000, dropout_p=0.5):
         super(flow_r2plus1d_18, self).__init__()
         self.pretrained = pretrained
         self.num_classes = num_classes

@@ -192,8 +192,8 @@ class Processor():
 
     def __init__(self, arg):
 
-        arg.model_saved_name = "./save_models/" + arg.Experiment_name
-        arg.work_dir = "./work_dir/" + arg.Experiment_name
+        arg.model_saved_name = "/work/cvcs2024/SLR_sentiment_enhanced/model_weights/SL-GCN/models/" + arg.Experiment_name
+        arg.work_dir = "/work/cvcs2024/SLR_sentiment_enhanced/SLRSE_model_data/SL-GCN/work_dir/" + arg.Experiment_name
         self.arg = arg
         self.save_arg()
         if arg.phase == 'train':
@@ -495,7 +495,7 @@ class Processor():
                     score_dict = dict(
                         zip(self.data_loader[ln].dataset.sample_name, score))
 
-                    with open('./work_dir/' + arg.Experiment_name + '/eval_results/best_acc' + '.pkl'.format(
+                    with open(self.arg.work_dir + '/eval_results/best_acc' + '.pkl'.format(
                             epoch, accuracy), 'wb') as f:
                         pickle.dump(score_dict, f)
 
@@ -510,7 +510,7 @@ class Processor():
                     self.print_log('\tTop{}: {:.2f}%'.format(
                         k, 100 * self.data_loader[ln].dataset.top_k(score, k)))
 
-                with open('./work_dir/' + arg.Experiment_name + '/eval_results/epoch_' + str(epoch) + '_' + str(accuracy) + '.pkl'.format(
+                with open( self.arg.work_dir + '/eval_results/epoch_' + str(epoch) + '_' + str(accuracy) + '.pkl'.format(
                         epoch, accuracy), 'wb') as f:
                     pickle.dump(score_dict, f)
         return np.mean(loss_value)
