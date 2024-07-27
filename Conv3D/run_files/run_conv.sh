@@ -3,7 +3,7 @@
 #SBATCH --account=cvcs2024
 #SBATCH --job-name=test_repo
 #SBATCH --partition=all_usr_prod
-#SBATCH --gres=gpu:4
+#SBATCH --gres=gpu:2
 #SBATCH --time=24:00:00
 
 #SBATCH --output="run_output/rgb_output.log"
