@@ -43,6 +43,7 @@ if not os.path.exists(os.path.join(result_path, exp_name)):
 log_path = "/work/cvcs2024/SLR_sentiment_enhanced/SLRSE_model_data/Conv3D/log/sign_resnet2d+1_{}_{:%Y-%m-%d_%H-%M-%S}.log".format(exp_name, datetime.now())
 sum_path = "/work/cvcs2024/SLR_sentiment_enhanced/SLRSE_model_data/Conv3D/runs/sign_resnet2d+1_{}_{:%Y-%m-%d_%H-%M-%S}".format(exp_name, datetime.now())
 phase = 'Train'
+load_model = True
 # Log to file & tensorboard writer
 logging.basicConfig(level=logging.INFO, format='%(message)s', handlers=[logging.FileHandler(log_path), logging.StreamHandler()])
 logger = logging.getLogger('SLR')
@@ -57,8 +58,8 @@ device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 # Hyperparams
 num_classes = 2000 
-epochs = 100
-batch_size = 24
+epochs = 76 #100
+batch_size = 10
 learning_rate = 1e-3#1e-3 Train 1e-4 Finetune
 weight_decay = 1e-4 #1e-4
 log_interval = 80
@@ -84,18 +85,21 @@ if __name__ == '__main__':
         num_classes=num_classes, train=False, transform=transform)
     logger.info(torch.cuda.device_count())
     logger.info("Dataset samples: {}".format(len(train_set)+len(val_set)))
-    train_loader = DataLoader(train_set, batch_size=batch_size, shuffle=True, num_workers=24, pin_memory=True)
-    val_loader = DataLoader(val_set, batch_size=batch_size, shuffle=False, num_workers=24, pin_memory=True)
+    train_loader = DataLoader(train_set, batch_size=batch_size, shuffle=True, num_workers=12, pin_memory=True)
+    val_loader = DataLoader(val_set, batch_size=batch_size, shuffle=False, num_workers=12, pin_memory=True)
     # Create model
 
     model = r2plus1d_18(pretrained=False, num_classes=2000)
-    # load pretrained
-    # checkpoint = torch.load('/work/cvcs2024/SLR_sentiment_enhanced/model_weights/3D_conv/pretrained/slr_resnet2d+1.pth')
-    # new_state_dict = OrderedDict()
-    # for k, v in checkpoint.items():
-    #     name = k[7:] # remove 'module.'
-    #     new_state_dict[name]=v
-    # model.load_state_dict(new_state_dict)
+
+    if load_model:
+        # load pretrained model 
+        checkpoint = torch.load('/work/cvcs2024/SLR_sentiment_enhanced/SLRSE_model_data/Conv3D/model/checkpoint/rgb_final/sign_resnet2d+1_epoch023.pth')
+        new_state_dict = OrderedDict()
+        for k, v in checkpoint.items():
+            name = k[7:] # remove 'module.'
+            new_state_dict[name]=v
+        model.load_state_dict(new_state_dict)
+    
     if phase == 'Train':
         model.fc1 = nn.Linear(model.fc1.in_features, num_classes)
     print(model)

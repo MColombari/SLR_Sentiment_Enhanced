@@ -281,3 +281,34 @@ class Model(nn.Module):
         x = x.mean(3).mean(1)
 
         return self.fc(x)
+
+
+    def embed(self, x, keep_prob=1):
+        # for creating the embedding rappresentation 
+        N, C, T, V, M = x.size()
+        x = x.permute(0, 4, 3, 1, 2).contiguous().view(N, M * V * C, T)
+        x = self.data_bn(x)
+        x = x.view(N, M, V, C, T).permute(
+            0, 1, 3, 4, 2).contiguous().view(N * M, C, T, V)
+
+        x = self.l1(x, 1.0)
+        x = self.l2(x, 1.0)
+        x = self.l3(x, 1.0)
+        x = self.l4(x, 1.0)
+        x = self.l5(x, 1.0)
+        x = self.l6(x, 1.0)
+        x = self.l7(x, keep_prob)
+        x = self.l8(x, keep_prob)
+        x = self.l9(x, keep_prob)
+        x = self.l10(x, keep_prob)
+
+        # N*M,C,T,V
+        c_new = x.size(1)
+
+        # print(x.size())
+        # print(N, M, c_new)
+
+        # x = x.view(N, M, c_new, -1)
+        x = x.reshape(N, M, c_new, -1)
+        x = x.mean(3).mean(1)
+        return x
