@@ -169,6 +169,7 @@ class Video2Vec:
 
         arg.model_saved_name = "/work/cvcs2024/SLR_sentiment_enhanced/model_weights/SL-GCN/models/" + arg.Experiment_name
         arg.work_dir = "/work/cvcs2024/SLR_sentiment_enhanced/SLRSE_model_data/SL-GCN/work_dir/" + arg.Experiment_name
+        arg.out_put_filename = "joint_motion_tensors.pt"
         self.arg = arg
         self.dataset = {}
         self.save_arg()
@@ -253,7 +254,7 @@ class Video2Vec:
         
             with torch.no_grad():
                     embed = self.model.embed(skels)
-                    # print(f'embed.shape:{embed.shape}')
+                    #print(f'embed.size:{embed.size()}')
                     self.dataset[name] = embed
 
     
@@ -266,8 +267,17 @@ class Video2Vec:
         data = {"model": self.arg.Experiment_name, "embeddings": self.dataset}
 
         torch.save(
-            data, os.path.join(self.arg.work_dir, "tensors.pt")
+            data, os.path.join(self.arg.work_dir, self.arg.out_put_filename)
         )
+
+    def load_dataset(self, source):
+        """
+        load the embedded dataset
+        """
+        data = torch.load(source)
+
+        self.dataset = data['embeddings']
+        print(f'loading embeddings dataset from {source}')
 
     
 
@@ -279,7 +289,7 @@ class Video2Vec:
         skel = torch.tensor(skel, dtype=torch.float32)
         skel = skel.unsqueeze(0)
 
-        print(f'data.shape:{skel.shape}, data_type:{type(skel)} , data_dtype:{skel.dtype}')
+        #print(f'data.shape:{skel.shape}, data_type:{type(skel)} , data_dtype:{skel.dtype}')
 
         skel = Variable(
                     skel.float().cuda(self.output_device),
@@ -305,7 +315,7 @@ class Video2Vec:
        
         
         npy = np.load(target_file)
-        target_vec = self.embed_video(npy[0])
+        target_vec = self.embed_video(npy[1])
 
 
         # initiate computation of consine similarity
@@ -321,7 +331,7 @@ class Video2Vec:
         items = sim_dict.items()
         sim_dict = {k: v for k, v in sorted(items, key=lambda i: i[1], reverse=True)}
 
-        # cut to defined top n similar images
+        # cut to defined top k similar images
         if n is not None:
             sim_dict = dict(list(sim_dict.items())[: int(n)])
 
@@ -329,7 +339,7 @@ class Video2Vec:
         
 
     
-    def start(self):
+    def start(self): 
         """
         starting the embedding of the dataset
         """
@@ -369,7 +379,8 @@ if __name__ == '__main__':
     init_seed(0)
     print(arg)
     processor = Video2Vec(arg)
-    processor.start()
-    top5_dict = processor.similar_videos(target_file='/work/cvcs2024/SLR_sentiment_enhanced/SLRSE_model_data/SL-GCN/sign/27/train_data_joint.npy')
-    print(top5_dict)
+    #processor.start()
+    processor.load_dataset('/work/cvcs2024/SLR_sentiment_enhanced/SLRSE_model_data/SL-GCN/work_dir/embeddings_27_2_prova/joint_motion_tensors.pt')
+    topk_dict = processor.similar_videos(target_file='/work/cvcs2024/SLR_sentiment_enhanced/SLRSE_model_data/SL-GCN/sign/27/test_data_joint_motion.npy', n=10)
+    print(topk_dict)
 
