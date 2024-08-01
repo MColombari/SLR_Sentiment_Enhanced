@@ -4,13 +4,13 @@ import pickle
 import numpy as np
 from tqdm import tqdm
 
-label = open('test_labels_pseudo.pkl', 'rb')
+label = open('/work/cvcs2024/SLR_sentiment_enhanced/SLRSE_model_data/SL-GCN/sign/27/train_label.pkl', 'rb')
 label = np.array(pickle.load(label))
-r1 = open('joint_finetuned.pkl', 'rb')
+r1 = open('joint_train.pkl', 'rb')
 r1 = list(pickle.load(r1).items())
-r2 = open('bone_finetuned.pkl', 'rb')
+r2 = open('bone_train.pkl', 'rb')
 r2 = list(pickle.load(r2).items())
-r3 = open('joint_motion_finetuned.pkl', 'rb')
+r3 = open('joint_motion_train.pkl', 'rb')
 r3 = list(pickle.load(r3).items())
 r4 = open('bone_motion_finetuned.pkl', 'rb')
 r4 = list(pickle.load(r4).items())

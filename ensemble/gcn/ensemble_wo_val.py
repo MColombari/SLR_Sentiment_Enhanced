@@ -4,15 +4,15 @@ import pickle
 import numpy as np
 from tqdm import tqdm
 
-label = open('./test_labels_pseudo.pkl', 'rb')
+label = open('/work/cvcs2024/SLR_sentiment_enhanced/SLRSE_model_data/SL-GCN/sign/27/val_label.pkl', 'rb')
 label = np.array(pickle.load(label))
-r1 = open('./joint.pkl', 'rb')
+r1 = open('joint_train.pkl', 'rb')
 r1 = list(pickle.load(r1).items())
-r2 = open('./bone.pkl', 'rb')
+r2 = open('bone_train.pkl', 'rb')
 r2 = list(pickle.load(r2).items())
-r3 = open('./joint_motion.pkl', 'rb')
+r3 = open('joint_motion_train.pkl', 'rb')
 r3 = list(pickle.load(r3).items())
-r4 = open('./bone_motion.pkl', 'rb')
+r4 = open('bone_motion_train.pkl', 'rb')
 r4 = list(pickle.load(r4).items())
 
 alpha = [1.0,0.9,0.5,0.5] # used in submission 1
@@ -31,6 +31,7 @@ with open('predictions_wo_val.csv', 'w') as f:
         name2, r22 = r2[i]
         name3, r33 = r3[i]
         name4, r44 = r4[i]
+        # print(name, name1, name2, name3, name4)
         assert name == name1 == name2 == name3 == name4
         mean += r11.mean()
         score = (r11*alpha[0] + r22*alpha[1] + r33*alpha[2] + r44*alpha[3]) / np.array(alpha).sum()

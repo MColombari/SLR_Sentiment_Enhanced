@@ -7,17 +7,23 @@ from tqdm import tqdm
 
 label = open('test_labels_pseudo.pkl', 'rb')
 label = np.array(pickle.load(label))
+# from gcn/ folder 
 r1 = open('test_gcn_w_val_finetune.pkl', 'rb')
 r1 = list(pickle.load(r1).items())
+# from /work/cvcs2024/SLR_sentiment_enhanced/SLRSE_model_data/Conv3D/results/...
 r2 = open('test_rgb_w_val_finetune.pkl', 'rb')
 r2 = list(pickle.load(r2).items())
-r3 = open('test_flow_color_w_val_finetune.pkl', 'rb')
-r3 = list(pickle.load(r3).items())
+
+# we don't use it 
+# r3 = open('test_flow_color_w_val_finetune.pkl', 'rb')
+# r3 = list(pickle.load(r3).items())
+
+# from /work/cvcs2024/SLR_sentiment_enhanced/SLRSE_model_data/SSTCN
 r4 = open('test_feature_w_val_finetune.pkl', 'rb')
 r4 = list(pickle.load(r4).items())
 
 
-alpha = [1,0.9,0.4,0.4]  # gcn, rgb, flow_color, bin_w_val, 
+alpha = [1,0.9,0.4]  # gcn, rgb, bin_w_val, 
 
 right_num = total_num = right_num_5 = 0
 names = []
@@ -31,11 +37,10 @@ with open('predictions_rgb.csv', 'w') as f:
         names.append(name)
         name1, r11 = r1[i]
         name2, r22 = r2[i]
-        name3, r33 = r3[i]
         name4, r44 = r4[i]
-        assert name == name1 == name2 == name3
+        assert name == name1 == name2 
         mean += r11.mean()
-        score = (r11*alpha[0] + r22*alpha[1] + r33*alpha[2] + r44*alpha[3]) / np.array(alpha).sum() 
+        score = (r11*alpha[0] + r22*alpha[1]  + r44*alpha[2]) / np.array(alpha).sum() 
         score = score.squeeze()
         rank_5 = score.argsort()[-5:]
         right_num_5 += int(int(l) in rank_5)
