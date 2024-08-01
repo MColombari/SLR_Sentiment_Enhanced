@@ -43,7 +43,7 @@ if not os.path.exists(os.path.join(result_path, exp_name)):
 log_path = "/work/cvcs2024/SLR_sentiment_enhanced/SLRSE_model_data/Conv3D/log/sign_resnet2d+1_{}_{:%Y-%m-%d_%H-%M-%S}.log".format(exp_name, datetime.now())
 sum_path = "/work/cvcs2024/SLR_sentiment_enhanced/SLRSE_model_data/Conv3D/runs/sign_resnet2d+1_{}_{:%Y-%m-%d_%H-%M-%S}".format(exp_name, datetime.now())
 phase = 'Train'
-load_model = False
+load_model = True
 # Log to file & tensorboard writer
 logging.basicConfig(level=logging.INFO, format='%(message)s', handlers=[logging.FileHandler(log_path), logging.StreamHandler()])
 logger = logging.getLogger('SLR')
@@ -93,7 +93,7 @@ if __name__ == '__main__':
 
     if load_model:
         # load pretrained model 
-        checkpoint = torch.load('/work/cvcs2024/SLR_sentiment_enhanced/SLRSE_model_data/Conv3D/model/checkpoint/rgb_final/sign_resnet2d+1_epoch048.pth')
+        checkpoint = torch.load('/work/cvcs2024/SLR_sentiment_enhanced/SLRSE_model_data/Conv3D/model/checkpoint/rgb_final/sign_resnet2d+1_epoch051.pth')
         new_state_dict = OrderedDict()
         for k, v in checkpoint.items():
             name = k[7:] # remove 'module.'
