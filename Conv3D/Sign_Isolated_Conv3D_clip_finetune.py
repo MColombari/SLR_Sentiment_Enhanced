@@ -28,18 +28,20 @@ class LabelSmoothingCrossEntropy(nn.Module):
         return loss.mean()
 
 # Path setting
-exp_name = 'rgb_final_finetune'
-data_path = "../data/train_val_frames" # path to train_val_frames
-data_path2 = "../data/test_frames" # path to test_frames
-label_train_path = "data/train_val_labels.csv" # path to train_val labels
-label_val_path = "data/test_labels_pseudo.csv" # path to test pseudo labels
-model_path = "checkpoint/{}".format(exp_name)
+exp_name = 'rgb_final'
+result_path = '/work/cvcs2024/SLR_sentiment_enhanced/SLRSE_model_data/Conv3D/results'
+data_path = "/work/cvcs2024/SLR_sentiment_enhanced/SLRSE_model_data/data-prepare/train_frames/WLASL"
+data_path2 = "/work/cvcs2024/SLR_sentiment_enhanced/SLRSE_model_data/data-prepare/val_frames/WLASL"
+label_train_path = "/work/cvcs2024/SLR_sentiment_enhanced/datasets/WLASL/WLASL/start_kit/labels/train_labels.csv"
+label_val_path = "/work/cvcs2024/SLR_sentiment_enhanced/datasets/WLASL/WLASL/start_kit/labels/val_labels.csv"
+model_path = "/work/cvcs2024/SLR_sentiment_enhanced/SLRSE_model_data/Conv3D/model/checkpoint/{}".format(exp_name)
+latest_model = "/work/cvcs2024/SLR_sentiment_enhanced/SLRSE_model_data/Conv3D/model/checkpoint/rgb_final/sign_resnet2d+1_epoch051.pth"
 if not os.path.exists(model_path):
     os.mkdir(model_path)
-if not os.path.exists(os.path.join('results', exp_name)):
-    os.mkdir(os.path.join('results', exp_name))
-log_path = "log/sign_resnet2d+1_{}_{:%Y-%m-%d_%H-%M-%S}.log".format(exp_name, datetime.now())
-sum_path = "runs/sign_resnet2d+1_{}_{:%Y-%m-%d_%H-%M-%S}".format(exp_name, datetime.now())
+if not os.path.exists(os.path.join(result_path, exp_name)):
+    os.mkdir(os.path.join(result_path, exp_name))
+log_path = "/work/cvcs2024/SLR_sentiment_enhanced/SLRSE_model_data/Conv3D/log/sign_resnet2d+1_{}_{:%Y-%m-%d_%H-%M-%S}.log".format(exp_name, datetime.now())
+sum_path = "/work/cvcs2024/SLR_sentiment_enhanced/SLRSE_model_data/Conv3D/runs/sign_resnet2d+1_{}_{:%Y-%m-%d_%H-%M-%S}".format(exp_name, datetime.now())
 phase = 'Train'
 # Log to file & tensorboard writer
 logging.basicConfig(level=logging.INFO, format='%(message)s', handlers=[logging.FileHandler(log_path), logging.StreamHandler()])
@@ -49,15 +51,16 @@ writer = SummaryWriter(sum_path)
 
 # Use specific gpus
 # os.environ["CUDA_VISIBLE_DEVICES"]="4,5,6,7"
-os.environ["CUDA_VISIBLE_DEVICES"]="0,1,2,3"
+os.environ["CUDA_VISIBLE_DEVICES"]="0,1"
 # Device setting
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 # Hyperparams
-num_classes = 226 
+num_classes = 2000 
 epochs = 100
-batch_size = 24
-learning_rate = 1e-4#1e-3 Train 1e-4 Finetune
+batch_size = 10
+learning_rate = 1e-3#1e-3 Train 1e-4 Finetune
+weight_decay = 1e-4 #1e-4
 log_interval = 80
 sample_size = 128
 sample_duration = 32
@@ -80,12 +83,12 @@ if __name__ == '__main__':
     val_set = Sign_Isolated(data_path=data_path2, label_path=label_val_path, frames=sample_duration,
         num_classes=num_classes, train=False, transform=transform)
     logger.info("Dataset samples: {}".format(len(train_set)+len(val_set)))
-    train_loader = DataLoader(train_set, batch_size=batch_size, shuffle=True, num_workers=24, pin_memory=True)
-    val_loader = DataLoader(val_set, batch_size=batch_size, shuffle=False, num_workers=24, pin_memory=True)
+    train_loader = DataLoader(train_set, batch_size=batch_size, shuffle=True, num_workers=12, pin_memory=True)
+    val_loader = DataLoader(val_set, batch_size=batch_size, shuffle=False, num_workers=12, pin_memory=True)
     # Create model
-    model = r2plus1d_18(pretrained=True, num_classes=226)
+    model = r2plus1d_18(pretrained=True, num_classes=num_classes)
     # load pretrained
-    checkpoint = torch.load('final_models/val_rgb_final.pth')
+    checkpoint = torch.load(latest_model)
 
     new_state_dict = OrderedDict()
     for k, v in checkpoint.items():
@@ -126,6 +129,6 @@ if __name__ == '__main__':
             logger.info("Epoch {} Model Saved".format(epoch+1).center(60, '#'))
     elif phase == 'Test':
         logger.info("Testing Started".center(60, '#'))
-        val_loss = val_epoch(model, criterion, val_loader, device, 0, logger, writer, phase=phase, exp_name=exp_name)
+        val_loss = val_epoch(model, criterion, val_loader, device, 0, logger, writer, phase=phase, exp_name=exp_name, result_path="/work/cvcs2024/SLR_sentiment_enhanced/SLRSE_model_data/Conv3D/results/training_tmp_data")
 
     logger.info("Finished".center(60, '#'))

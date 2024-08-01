@@ -3,7 +3,7 @@ from sklearn.metrics import accuracy_score
 import pickle
 import numpy as np
 
-def val_epoch(model, criterion, dataloader, device, epoch, logger, writer, phase='Train', exp_name = None):
+def val_epoch(model, criterion, dataloader, device, epoch, logger, writer, phase='Train', exp_name = None, result_path = None):
     model.eval()
     losses = []
     all_label = []
@@ -40,9 +40,14 @@ def val_epoch(model, criterion, dataloader, device, epoch, logger, writer, phase
         validation_acc = accuracy_score(all_label.squeeze().cpu().data.squeeze().numpy(), all_pred.cpu().data.squeeze().numpy())
 
     if phase == 'Test':
-        with open('./results/{}/results_epoch{:03d}_{}.pkl'.format(exp_name, epoch+1, validation_acc), 'wb') as f:
-            score_dict = dict(zip(dataloader.dataset.sample_names, score))
-            pickle.dump(score_dict, f)
+        if result_path is not None:
+            with open('{}/{}/results_epoch{:03d}_{}.pkl'.format(result_path, exp_name, epoch+1, validation_acc), 'wb') as f:
+                score_dict = dict(zip(dataloader.dataset.sample_names, score))
+                pickle.dump(score_dict, f)
+        else:
+            with open('./results/{}/results_epoch{:03d}_{}.pkl'.format(exp_name, epoch+1, validation_acc), 'wb') as f:
+                score_dict = dict(zip(dataloader.dataset.sample_names, score))
+                pickle.dump(score_dict, f)
     # Log
     writer.add_scalars('Loss', {'validation': validation_loss}, epoch+1)
     writer.add_scalars('Accuracy', {'validation': validation_acc}, epoch+1)
