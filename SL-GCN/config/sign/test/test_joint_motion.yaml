@@ -41,7 +41,7 @@ step: [50]
 # training
 device: [0,1]
 phase: test
-weights: /work/cvcs2024/SLR_sentiment_enhanced/model_weights/SL-GCN/models/sign_bone_final-249.pt
+weights: /work/cvcs2024/SLR_sentiment_enhanced/model_weights/SL-GCN/models/sign_joint_motion_final-249.pt
 keep_rate: 0.9
 only_train_epoch: 1
 batch_size: 64
