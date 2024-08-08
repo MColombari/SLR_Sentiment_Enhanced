@@ -8,8 +8,7 @@ from DAN.networks.dan import DAN
 from PIL import Image
 from tqdm import tqdm
 
-
-
+import argparse
 
 
 class Model():
@@ -168,12 +167,19 @@ class Model():
         
 
 
+parser = argparse.ArgumentParser("gen_frames_faces")
+parser.add_argument("--video_folder", type=str)
+parser.add_argument("--npy_folder", type=str)
+parser.add_argument("--out_file", type=str)
+args = parser.parse_args()
+
+
 selected_faces = [0, 3, 4, 31] 
 emotion_weights = [1, 1, 1, 1, 1, 1, 1, 1]
 
-folder = '/work/cvcs2024/SLR_sentiment_enhanced/datasets/WLASL/WLASL/start_kit/data/train' # 'train', 'test'
-npy_folder = '/work/cvcs2024/SLR_sentiment_enhanced/SLRSE_model_data/data-prepare/demo/train_npy' #'val_npy/npy3' # 'train_npy/npy3', 'test_npy/npy3'
-out_file= '/work/cvcs2024/SLR_sentiment_enhanced/DAN/results/train.csv' 
+folder = args.video_folder
+npy_folder = args.npy_folder
+out_file = args.out_file
 
 
 dict_emotion= {'neutral': 0,
