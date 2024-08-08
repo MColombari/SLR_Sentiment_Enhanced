@@ -15,8 +15,8 @@ train_feeder_args:
   is_vector: True
 
 test_feeder_args:
-  data_path: /work/cvcs2024/SLR_sentiment_enhanced/SLRSE_model_data/SL-GCN/sign/27/val_data_bone_motion.npy
-  label_path: /work/cvcs2024/SLR_sentiment_enhanced/SLRSE_model_data/SL-GCN/sign/27/val_label.pkl
+  data_path: /work/cvcs2024/SLR_sentiment_enhanced/SLRSE_model_data/SL-GCN/sign/27/test_data_bone_motion.npy
+  label_path: /work/cvcs2024/SLR_sentiment_enhanced/SLRSE_model_data/SL-GCN/sign/27/test_label.pkl
   random_mirror: False
   normalization: True
   is_vector: True
@@ -40,12 +40,12 @@ step: [50]
 
 # training
 device: [0,1]
-weights: /work/cvcs2024/SLR_sentiment_enhanced/model_weights/SL-GCN/models/sign_bone_motion_final-249.pt
+weights: /work/cvcs2024/SLR_sentiment_enhanced/model_weights/SL-GCN/New_check_point/1/sign_bone_motion_final-249.pt
 keep_rate: 0.9
 only_train_epoch: 1
 batch_size: 64
 test_batch_size: 64
 start_epoch: 250
-num_epoch: 2000
+num_epoch: 750
 nesterov: True
 warm_up_epoch: 0

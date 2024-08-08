@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #SBATCH --account=cvcs2024
-#SBATCH --job-name=training_gcn_joint
+#SBATCH --job-name=joint_gcn
 #SBATCH --partition=all_usr_prod
 #SBATCH --gres=gpu:2
 #SBATCH --time=24:00:00

@@ -15,8 +15,8 @@ train_feeder_args:
   is_vector: False
 
 test_feeder_args:
-  data_path: /work/cvcs2024/SLR_sentiment_enhanced/SLRSE_model_data/SL-GCN/sign/27/val_data_joint.npy
-  label_path: /work/cvcs2024/SLR_sentiment_enhanced/SLRSE_model_data/SL-GCN/sign/27/val_label.pkl
+  data_path: /work/cvcs2024/SLR_sentiment_enhanced/SLRSE_model_data/SL-GCN/sign/27/test_data_joint.npy
+  label_path: /work/cvcs2024/SLR_sentiment_enhanced/SLRSE_model_data/SL-GCN/sign/27/test_label.pkl
   random_mirror: False
   normalization: True
 
@@ -43,6 +43,6 @@ keep_rate: 0.9
 only_train_epoch: 1
 batch_size: 64
 test_batch_size: 64
-num_epoch: 2500
+num_epoch: 250
 nesterov: True
 warm_up_epoch: 20
