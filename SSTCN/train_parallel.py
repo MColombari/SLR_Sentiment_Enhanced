@@ -16,6 +16,7 @@ NUM_CLASSES = 2000
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--dataset_path", type=str, default="./data/train_features", help="Path to input dataset")
+    parser.add_argument("--dataset_path_test", type=str, default="./data/train_features", help="Path to input dataset test")
     parser.add_argument("--save_path", type=str, default="./model_checkpoints", help="Path to save")
     parser.add_argument("--num_epochs", type=int, default=400, help="Number of training epochs")
     parser.add_argument("--batch_size", type=int, default=60, help="Size of each training batch")
@@ -32,7 +33,7 @@ if __name__ == "__main__":
     train_dataloader = DataLoader(train_dataset, batch_size=opt.batch_size, shuffle=True, num_workers=12,pin_memory=True)
 
     # Define test set
-    test_dataset = SimplerTorchDataset(istrain=False, fea_dir=opt.dataset_path, repeat=1)
+    test_dataset = SimplerTorchDataset(istrain=False, fea_dir=opt.dataset_path_test, repeat=1)
     test_dataloader = DataLoader(test_dataset, batch_size=opt.batch_size, shuffle=False, num_workers=12,pin_memory=True)
 
     # Classification criterion

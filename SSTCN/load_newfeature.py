@@ -109,7 +109,7 @@ class SimplerTorchDataset(Dataset):
     fea_dir, # features dir
     isaug=False,# set True for training, False for finetuning
     repeat=1):
-        self.load_name = './train_val_split_WLASL.mat'
+        self.load_name = './train_val_split_WLASL_no_val.mat'
         self.mat = scipy.io.loadmat(self.load_name)
         self.istrain = istrain
         self.isaug = isaug
