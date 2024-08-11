@@ -49,7 +49,7 @@ class Model():
         faces = self.detect(img0)
 
         if len(faces) == 0:
-            return -1
+            return -1, 0
 
         ##  single face detection
         x, y, w, h = faces[0]
@@ -63,13 +63,13 @@ class Model():
 
         with torch.set_grad_enabled(False):
             out, _, _ = self.model(img)
-            _, pred = torch.max(out,1)
+            val, pred = torch.max(out,1)
             index = int(pred)
             if not no_label:    
                 label = self.labels[index]
             else:
                 label = index
-            return label
+            return label, val.item()
             # if type(label) is str:
             #     print("yes is str")
             #     return 0
@@ -90,18 +90,44 @@ npy_folder = args.npy_folder
 out_file = args.out_file
 
 
+def Average(lst): 
+    if len(lst) == 0:
+        return 0
+    return float(sum(lst) / len(lst))
+
+def tot_sum(lst):
+    sum = 0
+    for em_row in lst:
+        sum += Average(em_row)
+    return sum
+
+def normalize_list(lst):
+    ret = []
+    sum = tot_sum(lst)
+    if sum == 0:
+        return [0,0,0,0,0,0,0,0]
+    for em_row in lst:
+        ret.append(Average(em_row) / sum)
+    return ret
+
 def get_pred(model, frames):
     period = math.floor(len(frames) / 10) # Get 10% of frames.
     pred = [0,0,0,0,0,0,0,0]
+    acc_list = [[],[],[],[],[],[],[],[]]
     for i in range(len(frames)):
         if (i % period) == 0:
             # register emotion
-            em = model.fer(Image.fromarray(frames[i]), no_label=True)
+            em, acc = model.fer(Image.fromarray(frames[i]), no_label=True)
             if em == -1:
                 continue
             # print(f'{em}  -  {type(em)}')
             pred[em] += 1
-    return int(pd.Series(pred).idxmax())
+            acc_list[em].append(acc)
+    index = int(pd.Series(pred).idxmax())
+    # print(acc_list)
+    # print(acc_list[index])
+    accuracy = normalize_list(acc_list)
+    return index, accuracy
 
 
 for root, dirs, files in os.walk(folder, topdown=False):
@@ -118,10 +144,18 @@ for root, dirs, files in os.walk(folder, topdown=False):
                 else:
                     break
 
-            label_number = get_pred(Model(), frames)
+            label_number, accuracy = get_pred(Model(), frames)
+
+            print_list = [name[:-10], label_number]
+            for e in accuracy:
+                print_list.append(f"{e:.4f}")
             
             with open(out_file, 'a', newline='\n') as csvfile:
                 spamwriter = csv.writer(csvfile, delimiter=',')
-                spamwriter.writerow([name[:-10],label_number])
+                spamwriter.writerow(print_list)
 
             print(f'{name[:-10]}: {label_number}')
+            print(f"Accuracy: [", end='')
+            for i in accuracy:
+                print("{:.4f}".format(i), end=',')
+            print("]")
