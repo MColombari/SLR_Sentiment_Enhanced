@@ -4,8 +4,8 @@ import csv
 """
 Create the .pkl file for the testing phase
 """
-TEST_LABEL_FILE_PATH = '/work/cvcs2024/SLR_sentiment_enhanced/datasets/WLASL/WLASL/start_kit/labels/test_labels.csv'
-DST_FILE_PATH = '../test_labels_WLASL.pkl'
+TEST_LABEL_FILE_PATH = '/work/cvcs2024/SLR_sentiment_enhanced/datasets/WLASL/WLASL/start_kit/labels/val_labels.csv'
+DST_FILE_PATH = '../val_labels_WLASL.pkl'
 
 file_names = []
 print('start load test')

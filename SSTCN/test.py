@@ -16,6 +16,7 @@ if __name__ == "__main__":
     parser.add_argument("--dataset_path", type=str, default="./data/new_test_24x24", help="Path to input dataset")
     parser.add_argument("--checkpoint_model", type=str, default="./T_Pose_model_final.pth", help="Optional path to checkpoint model")
     parser.add_argument("--test_labels", type=str, default="./test_labels_pseudo.pkl", help="path for input test labels")
+    parser.add_argument("--out_file", type=str, default="./out.pkl", help="path output file")
 
     opt = parser.parse_args()
     print(opt)
@@ -50,7 +51,7 @@ if __name__ == "__main__":
         pred = pred.cpu().detach().numpy()
         preds.append(pred)
         
-    with open('/work/cvcs2024/SLR_sentiment_enhanced/SLRSE_model_data/SSTCN/T_Pose_model_test.pkl', 'wb') as f:
+    with open(opt.out_file, 'wb') as f:
          score_dict = dict(zip(names, preds))
          pickle.dump(score_dict, f)
 
