@@ -54,11 +54,12 @@ def enhance_emotion(score, emotion, label):
     for i in range(1,8):
         e_weight[w_to_e[str(i)]] = emotion[1][i]
 
-    score += score * e_weight
+    ret = score.copy()
+    ret += ret * e_weight
     # print("after")
     # print(score[list_enhance])
     # print(score[list_reduce])
-    return score
+    return ret
 
 
 def score_diff(score ,l):
@@ -82,7 +83,7 @@ with open(SAVE_PATH_FOLDER + '/predictions_wo_val.csv', 'w') as f:
         name, l = label[:, i]
         # if name != "signer5_sample336":
         #     continue
-        print(name)
+        # print(name)
         names.append(name)
         name1, r11 = r1[i]
         name2, r22 = r2[i]
@@ -93,11 +94,21 @@ with open(SAVE_PATH_FOLDER + '/predictions_wo_val.csv', 'w') as f:
         mean_e += r11.mean()
         score = (r11*alpha[0] + r22*alpha[1] + r33*alpha[2] + r44*alpha[3]) / np.array(alpha).sum()
         # print(len(score))
+        
+        rank_5 = score.argsort()[-5:]
 
         # Motion enhance
         score_emotion = enhance_emotion(score, emotions[name], l)
+
         rank_5_e = score_emotion.argsort()[-5:]
-        print(rank_5_e)
+        if not np.array_equal(rank_5, rank_5_e):
+            print(f"Different prediction {name}, original {l}")
+            print(f"Emotion {emotions[name][1]}")
+            print(f"Normal: {rank_5}")
+            print(f"Emotion: {rank_5_e}")
+
+        # Save
+        # print(rank_5_e)
         right_num_5_e += int(int(l) in rank_5_e)
         r_e = np.argmax(score_emotion)
         scores_e.append(score_emotion)
@@ -107,7 +118,7 @@ with open(SAVE_PATH_FOLDER + '/predictions_wo_val.csv', 'w') as f:
         f.write('{}, {}\n'.format(name, r_e))
 
         new_score = score_diff(score, int(l))
-        print(new_score)
+        # print(new_score)
         new_losses.append(new_score)
 
 
