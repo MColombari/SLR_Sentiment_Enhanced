@@ -48,11 +48,27 @@ with open(PATH_EMOTIONS, newline='\n') as csvfile:
 f_w_to_e = open(EMOTION_ASSOSIATION)
 w_to_e = json.load(f_w_to_e)
 
+# print(w_to_e.values())
+
+emotion_sensitive_label = []
+for i in w_to_e.values():
+    for a in i:
+        emotion_sensitive_label.append(a)
+
+# print(emotion_sensitive_label)
+
 
 def enhance_emotion(score, emotion, label):
+    top10 = score.argsort()[-10:]
     e_weight = np.zeros(2000)
     for i in range(1,8):
-        e_weight[w_to_e[str(i)]] = emotion[1][i]
+        possible_label = w_to_e[str(i)]
+        use_lable = []
+        for e in top10:
+            if e in possible_label:
+                use_lable.append(e)
+        
+        e_weight[use_lable] = emotion[1][i]
 
     ret = score.copy()
     ret += ret * e_weight
@@ -84,6 +100,11 @@ with open(SAVE_PATH_FOLDER + '/predictions_wo_val.csv', 'w') as f:
         # if name != "signer5_sample336":
         #     continue
         # print(name)
+
+        # Only for emotion sensitivi label
+        if not int(l) in emotion_sensitive_label:
+            continue
+
         names.append(name)
         name1, r11 = r1[i]
         name2, r22 = r2[i]
