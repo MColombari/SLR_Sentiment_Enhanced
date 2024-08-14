@@ -10,9 +10,9 @@ import json
 
 
 PATH_LABEL = '/work/cvcs2024/SLR_sentiment_enhanced/SLRSE_model_data/SL-GCN/sign/27/val_label.pkl'
-PATH_GCN = ""
+PATH_GCN = "/work/cvcs2024/SLR_sentiment_enhanced/SLRSE_model_data/Ensemble/SL-GCN/prediction/gcn_ensembled.pkl"
 PATH_3D_CONV = ""
-PATH_SSTCN = ""
+PATH_SSTCN = "/work/cvcs2024/SLR_sentiment_enhanced/SLRSE_model_data/Ensemble/SSTCN/val_out.plk"
 PATH_EMOTIONS = "/work/cvcs2024/SLR_sentiment_enhanced/DAN/results/val.csv"
 EMOTION_ASSOSIATION = "/homes/mcolombari/SLR_Sentiment_Enhanced/DAN_module/sign_emotion_assosiation.json"
 
