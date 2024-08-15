@@ -40,6 +40,7 @@ def get_parser():
         help='the work folder for storing the embeddings ')
 
     parser.add_argument('-Experiment_name', default='')
+    parser.add_argument('-output_name', default='')
     parser.add_argument(
         '--config',
         default='./config/nturgbd-cross-view/test_bone.yaml',
@@ -167,9 +168,12 @@ class Video2Vec:
     """
     def __init__(self, arg):
 
-        arg.model_saved_name = "/work/cvcs2024/SLR_sentiment_enhanced/model_weights/SL-GCN/models/" + arg.Experiment_name
-        arg.work_dir = "/work/cvcs2024/SLR_sentiment_enhanced/SLRSE_model_data/SL-GCN/work_dir/" + arg.Experiment_name
-        arg.out_put_filename = "joint_motion_tensors.pt"
+        arg.model_saved_name = "/work/cvcs2024/SLR_sentiment_enhanced/SLRSE_model_data/Retrival/Embeddings/model/" + arg.Experiment_name 
+        arg.work_dir = "/work/cvcs2024/SLR_sentiment_enhanced/SLRSE_model_data/Retrival/Embeddings/" + arg.Experiment_name
+
+        if not os.path.exists(arg.work_dir):
+            os.mkdir(arg.work_dir)
+
         self.arg = arg
         self.dataset = {}
         self.save_arg()
@@ -267,7 +271,7 @@ class Video2Vec:
         data = {"model": self.arg.Experiment_name, "embeddings": self.dataset}
 
         torch.save(
-            data, os.path.join(self.arg.work_dir, self.arg.out_put_filename)
+            data, os.path.join(self.arg.work_dir, self.arg.output_name)
         )
 
     def load_dataset(self, source):
@@ -277,7 +281,7 @@ class Video2Vec:
         data = torch.load(source)
 
         self.dataset = data['embeddings']
-        print(f'loading embeddings dataset from {source}')
+        print(f'loading embeddings dataset from {source}, {len(processor.dataset)}')
 
     
 
@@ -345,6 +349,7 @@ class Video2Vec:
         """
         self.embed_dataset()
         self.save_dataset()
+        print(f'Save embeddings correctly: {len(self.dataset)}')
 
     def save_arg(self):
         # save arg
@@ -379,8 +384,8 @@ if __name__ == '__main__':
     init_seed(0)
     print(arg)
     processor = Video2Vec(arg)
-    #processor.start()
-    processor.load_dataset('/work/cvcs2024/SLR_sentiment_enhanced/SLRSE_model_data/SL-GCN/work_dir/embeddings_27_2_prova/joint_motion_tensors.pt')
-    topk_dict = processor.similar_videos(target_file='/work/cvcs2024/SLR_sentiment_enhanced/SLRSE_model_data/SL-GCN/sign/27/test_data_joint_motion.npy', n=10)
-    print(topk_dict)
+    #processor.load_dataset('/work/cvcs2024/SLR_sentiment_enhanced/SLRSE_model_data/Retrival/Embeddings/embeddings_27_2/bone_motion_embeddings.pt')
+    processor.start()
+    #topk_dict = processor.similar_videos(target_file='/work/cvcs2024/SLR_sentiment_enhanced/SLRSE_model_data/SL-GCN/sign/27/test_data_joint_motion.npy', n=10)
+    #print(topk_dict)
 
