@@ -10,4 +10,4 @@
 #SBATCH --error="run_output/error_embedding.log"
 
 # training 
-python3 video2vec.py --config="config/sign/embeddings/embeddings_config.yaml"
+python3 video2vec.py --config="config/sign/embeddings/embeddings_bone_motion.yaml"
