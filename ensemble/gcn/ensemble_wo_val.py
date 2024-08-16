@@ -1,17 +1,23 @@
 import argparse
+import csv
 import pickle
+import os
 
 import numpy as np
 from tqdm import tqdm
 
 import statistics
 
+EXPERIMENT_NUMBER = 1
+
 PATH_JOINT = "/work/cvcs2024/SLR_sentiment_enhanced/SLRSE_model_data/Ensemble/SL-GCN/joint/epoch_0_0.29526257803892764.pkl"
 PATH_JOINT_MOTION = "/work/cvcs2024/SLR_sentiment_enhanced/SLRSE_model_data/Ensemble/SL-GCN/joint_motion/epoch_0_0.08152772677194271.pkl"
 PATH_BONE = "/work/cvcs2024/SLR_sentiment_enhanced/SLRSE_model_data/Ensemble/SL-GCN/bone/epoch_0_0.21263312522952627.pkl"
 PATH_BONE_MOTION = "/work/cvcs2024/SLR_sentiment_enhanced/SLRSE_model_data/Ensemble/SL-GCN/bone_motion/epoch_0_0.07895703268453912.pkl"
 
-SAVE_PATH_FOLDER  = "/work/cvcs2024/SLR_sentiment_enhanced/SLRSE_model_data/Ensemble/SL-GCN/prediction"
+SAVE_PATH_FOLDER  = "/work/cvcs2024/SLR_sentiment_enhanced/SLRSE_model_data/Ensemble/SL-GCN/prediction/" + str(EXPERIMENT_NUMBER)
+if not os.path.exists(SAVE_PATH_FOLDER):
+    os.makedirs(SAVE_PATH_FOLDER)
 
 label = open('/work/cvcs2024/SLR_sentiment_enhanced/SLRSE_model_data/SL-GCN/sign/27/val_label.pkl', 'rb')
 label = np.array(pickle.load(label))
@@ -25,15 +31,32 @@ r4 = open(PATH_BONE_MOTION, 'rb')
 r4 = list(pickle.load(r4).items())
 
 
+def softmax(x):
+    e_x = np.exp(x - np.max(x))
+    return e_x / e_x.sum(axis=0)
+
+
 def score_diff(score ,l):
     actuall = np.zeros(2000)
     actuall[l] = 1
     tmp = score + np.min(score)
-    ret = abs((actuall - ((score-np.min(score))/(np.max(score)-np.min(score))))).sum()
+    norm = (score-np.min(score))/(np.max(score)-np.min(score))
+    # print(norm)
+    ret = abs((actuall - norm)).sum()
     return ret
 
 
-alpha = [1.0,0.9,0.5,0.5] # used in submission 1
+def score_diff_with_softmax(score ,l):
+    actuall = np.zeros(2000)
+    actuall[l] = 1
+    tmp = score + np.min(score)
+    score_with_softmax = softmax(score)
+    # print(norm)
+    ret = abs((actuall - score_with_softmax)).sum()
+    return ret
+
+
+alpha = [1.0,0.5,1.0,0.5]
 
 right_num = total_num = right_num_5 = 0
 names = []
@@ -41,8 +64,8 @@ preds = []
 scores = []
 mean = 0
 new_losses = []
+new_losses_softmax = []
 with open(SAVE_PATH_FOLDER + '/predictions_wo_val.csv', 'w') as f:
-
     for i in tqdm(range(len(label[0]))):
         name, l = label[:, i]
         names.append(name)
@@ -54,6 +77,20 @@ with open(SAVE_PATH_FOLDER + '/predictions_wo_val.csv', 'w') as f:
         assert name == name1 == name2 == name3 == name4
         mean += r11.mean()
         score = (r11*alpha[0] + r22*alpha[1] + r33*alpha[2] + r44*alpha[3]) / np.array(alpha).sum()
+
+        stat_list = []
+        stat_list.append(name)
+        stat_list.append(l)
+        stat_list.append(f"{score_diff(score, int(l)):.4f}")
+        stat_list.append(f"{score_diff_with_softmax(score, int(l)):.4f}")
+        
+        for i in score:
+             stat_list.append(f"{i:.10f}")
+
+        with open(SAVE_PATH_FOLDER + "/stat.csv", 'a', newline='\n') as csvfile:
+                spamwriter = csv.writer(csvfile, delimiter=',')
+                spamwriter.writerow(stat_list)
+
         # score = (r11*alpha[0] + r22*alpha[1] + r33*alpha[2] + r44*alpha[3]) / np.array(alpha).mean()
         # score = r11*alpha[0] 
         rank_5 = score.argsort()[-5:]
@@ -65,19 +102,24 @@ with open(SAVE_PATH_FOLDER + '/predictions_wo_val.csv', 'w') as f:
         total_num += 1
         f.write('{}, {}\n'.format(name, r))
         new_losses.append(score_diff(score, int(l)))
+        new_losses_softmax.append(score_diff_with_softmax(score, int(l)))
+    
+    
     acc = right_num / total_num
     acc5 = right_num_5 / total_num
     print(total_num)
     print('top1: ', acc)
     print('top5: ', acc5)
     print(f'Loss: {statistics.mean(new_losses)}')
+    print(f'Loss softmax: {statistics.mean(new_losses_softmax)}')
 
 f.close()
 print(mean/len(label[0]))
-# with open('./val_pred.pkl', 'wb') as f:
-#     # score_dict = dict(zip(names, preds))
-#     score_dict = (names, preds)
-#     pickle.dump(score_dict, f)
+
+with open(SAVE_PATH_FOLDER + '/val_pred.pkl', 'wb') as f:
+    # score_dict = dict(zip(names, preds))
+    score_dict = (names, preds)
+    pickle.dump(score_dict, f)
 
 with open(SAVE_PATH_FOLDER + '/gcn_ensembled.pkl', 'wb') as f:
     score_dict = dict(zip(names, scores))
