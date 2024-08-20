@@ -20,7 +20,7 @@ num_channels = 3
 
 
 
-def gendata(data_path, label_path, out_path, part='train', config='27'):
+def gendata(data_path, label_path, out_path, part='test', config='27'):
     labels = []
     data=[]
     sample_names = []
@@ -39,14 +39,20 @@ def gendata(data_path, label_path, out_path, part='train', config='27'):
             # print(line[1])
             labels.append(int(line[1]))
             # print(labels[-1])
+    
+    #debugging: 
+    #print(f"Data: {data}")
+    #print(f"Sample Names: {sample_names}")
+    #print(f"Labels: {labels}")
+    
 
     fp = np.zeros((len(data), max_frame, num_joints, num_channels, max_body_true), dtype=np.float32)
 
     for i, data_path in enumerate(data):
 
-        # print(sample_names[i])
+        #print(sample_names[i])
         skel = np.load(data_path)
-        skel = skel[:,selected,:]
+        #skel = skel[:,selected,:]
 
         if skel.shape[0] < max_frame:
             L = skel.shape[0]
@@ -73,15 +79,13 @@ def gendata(data_path, label_path, out_path, part='train', config='27'):
 
 
 
-
-
-
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Sign Data Converter.')
-    parser.add_argument('--data_path', default='/data/sign/test_npy/npy') #'train_npy/npy', 'va_npy/npy'
-    parser.add_argument('--label_path', default='../data/sign/27/train_labels.csv') # 'train_labels.csv', 'val_gt.csv', 'test_labels.csv'
-    parser.add_argument('--out_folder', default='../data/sign/')
-    parser.add_argument('--part', default='train')
+    parser.add_argument('--data_path', default='/work/cvcs2024/SLR_sentiment_enhanced/SLRSE_model_data/data-prepare/rotated_test_npy') #'train_npy/npy', 'va_npy/npy'
+    #parser.add_argument('--label_path', default='../data/sign/27/test_labels.csv') # 'train_labels.csv', 'val_gt.csv', 'test_labels.csv'
+    parser.add_argument('--label_path', default='/work/cvcs2024/SLR_sentiment_enhanced/datasets/WLASL/WLASL/start_kit/labels/test_labels.csv')
+    parser.add_argument('--out_folder', default='/work/cvcs2024/SLR_sentiment_enhanced/SLRSE_model_data/SL-GCN/sign/27/prova/')
+    parser.add_argument('--part', default='test')
     parser.add_argument('--points', default='27')
 
     
