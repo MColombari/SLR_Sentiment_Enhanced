@@ -81,9 +81,9 @@ def gendata(data_path, label_path, out_path, part='test', config='27'):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Sign Data Converter.')
-    parser.add_argument('--data_path', default='/work/cvcs2024/SLR_sentiment_enhanced/SLRSE_model_data/data-prepare/rotated_test_npy') #'train_npy/npy', 'va_npy/npy'
+    parser.add_argument('--data_path', default='/work/cvcs2024/SLR_sentiment_enhanced/SLRSE_model_data/data-prepare/geometry/rotated_val_npy') #'train_npy/npy', 'va_npy/npy'
     #parser.add_argument('--label_path', default='../data/sign/27/test_labels.csv') # 'train_labels.csv', 'val_gt.csv', 'test_labels.csv'
-    parser.add_argument('--label_path', default='/work/cvcs2024/SLR_sentiment_enhanced/datasets/WLASL/WLASL/start_kit/labels/test_labels.csv')
+    parser.add_argument('--label_path', default='/work/cvcs2024/SLR_sentiment_enhanced/datasets/WLASL/WLASL/start_kit/labels/val_labels.csv')
     parser.add_argument('--out_folder', default='/work/cvcs2024/SLR_sentiment_enhanced/SLRSE_model_data/SL-GCN/sign/27/prova/')
     parser.add_argument('--part', default='test')
     parser.add_argument('--points', default='27')
