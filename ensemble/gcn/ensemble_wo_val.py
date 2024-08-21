@@ -8,18 +8,18 @@ from tqdm import tqdm
 
 import statistics
 
-EXPERIMENT_NUMBER = 1
+EXPERIMENT_NUMBER = 6
 
-PATH_JOINT = "/work/cvcs2024/SLR_sentiment_enhanced/SLRSE_model_data/Ensemble/SL-GCN/joint/epoch_0_0.29526257803892764.pkl"
-PATH_JOINT_MOTION = "/work/cvcs2024/SLR_sentiment_enhanced/SLRSE_model_data/Ensemble/SL-GCN/joint_motion/epoch_0_0.08152772677194271.pkl"
-PATH_BONE = "/work/cvcs2024/SLR_sentiment_enhanced/SLRSE_model_data/Ensemble/SL-GCN/bone/epoch_0_0.21263312522952627.pkl"
-PATH_BONE_MOTION = "/work/cvcs2024/SLR_sentiment_enhanced/SLRSE_model_data/Ensemble/SL-GCN/bone_motion/epoch_0_0.07895703268453912.pkl"
+PATH_JOINT = "/work/cvcs2024/SLR_sentiment_enhanced/SLRSE_model_data/Ensemble/SL-GCN/Ensemble_NN_train/Train_dataset/joint/epoch_0_0.9531320926009986.pkl"
+PATH_JOINT_MOTION = "/work/cvcs2024/SLR_sentiment_enhanced/SLRSE_model_data/Ensemble/SL-GCN/Ensemble_NN_train/Train_dataset/joint_motion/epoch_0_0.9505220154334998.pkl"
+PATH_BONE = "/work/cvcs2024/SLR_sentiment_enhanced/SLRSE_model_data/Ensemble/SL-GCN/Ensemble_NN_train/Train_dataset/bone/epoch_0_0.9532455742169769.pkl"
+PATH_BONE_MOTION = "/work/cvcs2024/SLR_sentiment_enhanced/SLRSE_model_data/Ensemble/SL-GCN/Ensemble_NN_train/Train_dataset/bone_motion/epoch_0_0.9505220154334998.pkl"
 
 SAVE_PATH_FOLDER  = "/work/cvcs2024/SLR_sentiment_enhanced/SLRSE_model_data/Ensemble/SL-GCN/prediction/" + str(EXPERIMENT_NUMBER)
 if not os.path.exists(SAVE_PATH_FOLDER):
     os.makedirs(SAVE_PATH_FOLDER)
 
-label = open('/work/cvcs2024/SLR_sentiment_enhanced/SLRSE_model_data/SL-GCN/sign/27/val_label.pkl', 'rb')
+label = open('/work/cvcs2024/SLR_sentiment_enhanced/SLRSE_model_data/SL-GCN/sign/27/train_label.pkl', 'rb')
 label = np.array(pickle.load(label))
 r1 = open(PATH_JOINT, 'rb')
 r1 = list(pickle.load(r1).items())
@@ -58,6 +58,37 @@ def score_diff_with_softmax(score ,l):
 
 alpha = [1.0,0.5,1.0,0.5]
 
+
+# name, l = label[:, 2350]
+# name1, r11 = r1[2350]
+# name2, r22 = r2[2350]
+# name3, r33 = r3[2350]
+# name4, r44 = r4[2350]
+# print(f"L: {name}")
+# print(f"1: {name1}")
+# print(f"2: {name2}")
+# print(f"3: {name3}")
+# print(f"4: {name4}")
+
+# Remove redundancy
+print(label.dtype)
+dim = label.shape[1] - 1
+skip_flag = True
+new_label = np.empty((2, dim), dtype='<U21')
+new_idx = 0
+for i in range(len(label[0])):
+    name, l = label[:, i]
+    if name == 'signer8_sample1' and skip_flag:
+        skip_flag = False
+        continue
+    new_label[0, new_idx] = name
+    new_label[1, new_idx] = l
+    new_idx += 1
+
+label = new_label
+print(label.shape)
+# print(label)
+
 right_num = total_num = right_num_5 = 0
 names = []
 preds = []
@@ -68,11 +99,18 @@ new_losses_softmax = []
 with open(SAVE_PATH_FOLDER + '/predictions_wo_val.csv', 'w') as f:
     for i in tqdm(range(len(label[0]))):
         name, l = label[:, i]
+        # print(name)
         names.append(name)
         name1, r11 = r1[i]
         name2, r22 = r2[i]
         name3, r33 = r3[i]
         name4, r44 = r4[i]
+        if not name == name1 == name2 == name3 == name4:
+            print(f"L: {name}")
+            print(f"1: {name1}")
+            print(f"2: {name2}")
+            print(f"3: {name3}")
+            print(f"4: {name4}")
         # print(name, name1, name2, name3, name4)
         assert name == name1 == name2 == name3 == name4
         mean += r11.mean()
