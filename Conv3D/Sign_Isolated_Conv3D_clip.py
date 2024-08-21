@@ -29,12 +29,12 @@ class LabelSmoothingCrossEntropy(nn.Module):
         return loss.mean()
 
 # Path setting
-exp_name = 'rgb_final'
+exp_name = 'rgb_training'
 result_path = '/work/cvcs2024/SLR_sentiment_enhanced/SLRSE_model_data/Conv3D/results'
 data_path = "/work/cvcs2024/SLR_sentiment_enhanced/SLRSE_model_data/data-prepare/train_frames/WLASL"
-data_path2 = "/work/cvcs2024/SLR_sentiment_enhanced/SLRSE_model_data/data-prepare/val_frames/WLASL"
+data_path2 = "/work/cvcs2024/SLR_sentiment_enhanced/SLRSE_model_data/data-prepare/test_frames/WLASL"
 label_train_path = "/work/cvcs2024/SLR_sentiment_enhanced/datasets/WLASL/WLASL/start_kit/labels/train_labels.csv"
-label_val_path = "/work/cvcs2024/SLR_sentiment_enhanced/datasets/WLASL/WLASL/start_kit/labels/val_labels.csv"
+label_val_path = "/work/cvcs2024/SLR_sentiment_enhanced/datasets/WLASL/WLASL/start_kit/labels/test_labels.csv"
 model_path = "/work/cvcs2024/SLR_sentiment_enhanced/SLRSE_model_data/Conv3D/model/checkpoint/{}".format(exp_name)
 if not os.path.exists(model_path):
     os.mkdir(model_path)
@@ -57,8 +57,10 @@ writer = SummaryWriter(sum_path)
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 # Hyperparams
-num_classes = 2000 
-epochs = 100
+num_classes = 2000
+# use for restart the training 
+s_epoch = 0 
+epochs = 500
 batch_size = 10
 learning_rate = 1e-3#1e-3 Train 1e-4 Finetune
 weight_decay = 1e-4 #1e-4
@@ -89,16 +91,19 @@ if __name__ == '__main__':
     val_loader = DataLoader(val_set, batch_size=batch_size, shuffle=False, num_workers=12, pin_memory=True)
     # Create model
 
-    model = r2plus1d_18(pretrained=False, num_classes=2000)
+    model = r2plus1d_18(pretrained=True, num_classes=2000)
 
     if load_model:
         # load pretrained model 
-        checkpoint = torch.load('/work/cvcs2024/SLR_sentiment_enhanced/SLRSE_model_data/Conv3D/model/checkpoint/rgb_final/sign_resnet2d+1_epoch051.pth')
+        checkpoint = torch.load('/work/cvcs2024/SLR_sentiment_enhanced/SLRSE_model_data/Conv3D/model/checkpoint/rgb_training/sign_resnet2d+1_epoch301.pth')
+        s_epoch = checkpoint['epoch']
+        model_dict = checkpoint['model_dict']
         new_state_dict = OrderedDict()
-        for k, v in checkpoint.items():
+        for k, v in model_dict.items():
             name = k[7:] # remove 'module.'
             new_state_dict[name]=v
         model.load_state_dict(new_state_dict)
+        logger.info(f'load from checkpoint with start epoch: {s_epoch}')
     
     if phase == 'Train':
         model.fc1 = nn.Linear(model.fc1.in_features, num_classes)
@@ -120,7 +125,7 @@ if __name__ == '__main__':
     # Start training
     if phase == 'Train':
         logger.info("Training Started".center(60, '#'))
-        for epoch in range(epochs):
+        for epoch in range(s_epoch, epochs):
             print('lr: ', get_lr(optimizer))
             # Train the model
             train_epoch(model, criterion, optimizer, train_loader, device, epoch, logger, log_interval, writer)
@@ -131,9 +136,14 @@ if __name__ == '__main__':
             val_loss = val_epoch(model, criterion, val_loader, device, epoch, logger, writer)
             scheduler.step(val_loss)
             
-            # Save model
-            torch.save(model.state_dict(), os.path.join(model_path, "sign_resnet2d+1_epoch{:03d}.pth".format(epoch+1)))
-            logger.info("Epoch {} Model Saved".format(epoch+1).center(60, '#'))
+            # Save model every 10 epochs 
+            if epoch % 10 == 0:
+                # save model state and epoch number
+                torch.save({
+                    'epoch': epoch,
+                    'model_dict':model.state_dict()}, 
+                    os.path.join(model_path, "sign_resnet2d+1_epoch{:03d}.pth".format(epoch+1)))
+                logger.info("Epoch {} Model Saved".format(epoch+1).center(60, '#'))
     elif phase == 'Test':
         logger.info("Testing Started".center(60, '#'))
         val_loss = val_epoch(model, criterion, val_loader, device, 0, logger, writer, phase=phase, exp_name=exp_name)
