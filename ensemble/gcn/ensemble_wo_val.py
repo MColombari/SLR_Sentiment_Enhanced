@@ -8,18 +8,18 @@ from tqdm import tqdm
 
 import statistics
 
-EXPERIMENT_NUMBER = 6
+EXPERIMENT_NUMBER = 7
 
-PATH_JOINT = "/work/cvcs2024/SLR_sentiment_enhanced/SLRSE_model_data/Ensemble/SL-GCN/Ensemble_NN_train/Train_dataset/joint/epoch_0_0.9531320926009986.pkl"
-PATH_JOINT_MOTION = "/work/cvcs2024/SLR_sentiment_enhanced/SLRSE_model_data/Ensemble/SL-GCN/Ensemble_NN_train/Train_dataset/joint_motion/epoch_0_0.9505220154334998.pkl"
-PATH_BONE = "/work/cvcs2024/SLR_sentiment_enhanced/SLRSE_model_data/Ensemble/SL-GCN/Ensemble_NN_train/Train_dataset/bone/epoch_0_0.9532455742169769.pkl"
-PATH_BONE_MOTION = "/work/cvcs2024/SLR_sentiment_enhanced/SLRSE_model_data/Ensemble/SL-GCN/Ensemble_NN_train/Train_dataset/bone_motion/epoch_0_0.9505220154334998.pkl"
+PATH_JOINT = "/work/cvcs2024/SLR_sentiment_enhanced/SLRSE_model_data/Ensemble/SL-GCN/Ensemble_NN_train/Test_dataset/joint/epoch_0_0.2830188679245283.pkl"
+PATH_JOINT_MOTION = "/work/cvcs2024/SLR_sentiment_enhanced/SLRSE_model_data/Ensemble/SL-GCN/Ensemble_NN_train/Test_dataset/joint_motion/epoch_0_0.07014997581035316.pkl"
+PATH_BONE = "/work/cvcs2024/SLR_sentiment_enhanced/SLRSE_model_data/Ensemble/SL-GCN/Ensemble_NN_train/Test_dataset/bone/epoch_0_0.2138364779874214.pkl"
+PATH_BONE_MOTION = "/work/cvcs2024/SLR_sentiment_enhanced/SLRSE_model_data/Ensemble/SL-GCN/Ensemble_NN_train/Test_dataset/bone_motion/epoch_0_0.07256894049346879.pkl"
 
 SAVE_PATH_FOLDER  = "/work/cvcs2024/SLR_sentiment_enhanced/SLRSE_model_data/Ensemble/SL-GCN/prediction/" + str(EXPERIMENT_NUMBER)
 if not os.path.exists(SAVE_PATH_FOLDER):
     os.makedirs(SAVE_PATH_FOLDER)
 
-label = open('/work/cvcs2024/SLR_sentiment_enhanced/SLRSE_model_data/SL-GCN/sign/27/train_label.pkl', 'rb')
+label = open('/work/cvcs2024/SLR_sentiment_enhanced/SLRSE_model_data/SL-GCN/sign/27/test_label.pkl', 'rb')
 label = np.array(pickle.load(label))
 r1 = open(PATH_JOINT, 'rb')
 r1 = list(pickle.load(r1).items())
@@ -70,24 +70,24 @@ alpha = [1.0,0.5,1.0,0.5]
 # print(f"3: {name3}")
 # print(f"4: {name4}")
 
-# Remove redundancy
-print(label.dtype)
-dim = label.shape[1] - 1
-skip_flag = True
-new_label = np.empty((2, dim), dtype='<U21')
-new_idx = 0
-for i in range(len(label[0])):
-    name, l = label[:, i]
-    if name == 'signer8_sample1' and skip_flag:
-        skip_flag = False
-        continue
-    new_label[0, new_idx] = name
-    new_label[1, new_idx] = l
-    new_idx += 1
+#   Remove redundancy
+# print(label.dtype)
+# dim = label.shape[1] - 1
+# skip_flag = True
+# new_label = np.empty((2, dim), dtype='<U21')
+# new_idx = 0
+# for i in range(len(label[0])):
+#     name, l = label[:, i]
+#     if name == 'signer8_sample1' and skip_flag:
+#         skip_flag = False
+#         continue
+#     new_label[0, new_idx] = name
+#     new_label[1, new_idx] = l
+#     new_idx += 1
 
-label = new_label
-print(label.shape)
-# print(label)
+# label = new_label
+# print(label.shape)
+# # print(label)
 
 right_num = total_num = right_num_5 = 0
 names = []
