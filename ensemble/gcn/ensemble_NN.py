@@ -11,32 +11,37 @@ from sklearn.preprocessing import normalize
 # Resources:
 #       https://machinelearningmastery.com/using-dropout-regularization-in-pytorch-models/
 
-LOAD_MODEL_WEIGHT_PATH = None
+EXP_NUMBER = 3100 # Epoch number
+
+LOAD_MODEL_WEIGHT_PATH = "/work/cvcs2024/SLR_sentiment_enhanced/SLRSE_model_data/Ensemble/Ensemble_NN/weights/Exp1100.pt"
 PATH_EMOTIONS_TRAIN = "/work/cvcs2024/SLR_sentiment_enhanced/DAN/results/train.csv"
 PATH_EMOTIONS_TEST = "/work/cvcs2024/SLR_sentiment_enhanced/DAN/results/test.csv"
 PATH_EMOTIONS_VAL = "/work/cvcs2024/SLR_sentiment_enhanced/DAN/results/val.csv"
 
-PATH_SCORE_GCN_TRAIN = ""
-PATH_SCORE_GCN_TEST = ""
-PATH_SCORE_GCN_VAL = ""
+PATH_SCORE_GCN_TRAIN = "/work/cvcs2024/SLR_sentiment_enhanced/SLRSE_model_data/Ensemble/Ensemble_NN/Training_data/train_dataset/gcn_ensembled.pkl"
+PATH_SCORE_GCN_TEST = "/work/cvcs2024/SLR_sentiment_enhanced/SLRSE_model_data/Ensemble/Ensemble_NN/Training_data/test_dataset/gcn_ensembled.pkl"
+PATH_SCORE_GCN_VAL = "/work/cvcs2024/SLR_sentiment_enhanced/SLRSE_model_data/Ensemble/Ensemble_NN/Training_data/val_dataset/gcn_ensembled.pkl"
 
 PATH_LABEL_TRAIN = "/work/cvcs2024/SLR_sentiment_enhanced/datasets/WLASL/WLASL/start_kit/labels/train_labels.csv"
 PATH_LABEL_TEST = "/work/cvcs2024/SLR_sentiment_enhanced/datasets/WLASL/WLASL/start_kit/labels/test_labels.csv"
 PATH_LABEL_VAL = "/work/cvcs2024/SLR_sentiment_enhanced/datasets/WLASL/WLASL/start_kit/labels/val_labels.csv"
 
-OUTPUT_WEIGHT_PATH = ""
+OUTPUT_WEIGHT_PATH = f"/work/cvcs2024/SLR_sentiment_enhanced/SLRSE_model_data/Ensemble/Ensemble_NN/weights/Exp{EXP_NUMBER}.pt"
 
 IS_TRAIN = True
 
+SKIP_NAME = ['signer5_sample1557', 'signer11_sample59']
+
 DROP_OUT_PROB = 0.2
 BATCH_SIZE = 64
-num_epochs = 100
+num_epochs = 2000
 num_fin = 2008
 num_classes = 2000
 num_hidden_1 = 2006
 num_hidden_2 = 2004
 learning_rate = 0.01
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+
 
 
 class MLP(nn.Module):
@@ -91,17 +96,27 @@ class InputData(Dataset):
         with open(score_path, 'rb') as f:
             plk_file = pickle.load(f)
         
-        label = open(label_path, 'rb')
-        label = np.array(pickle.load(label))
+        label = {}
+        with open(label_path, newline='\n') as csvfile:
+            spamreader = csv.reader(csvfile, delimiter=',')
+            for row in spamreader:
+                label[row[0]] = int(row[1])
 
+        flag = True
         self.data = []
-        for i in range(len(label[0])):
-            name, l = label[:, i]
-            arr_1 = normalize(np.array(plk_file[name]))
-            arr_2 = np.array(em_file[name])
+        for name, l in label.items():
+            if name in SKIP_NAME:
+                continue
+            arr_1 = normalize([np.array(plk_file[name], dtype=np.float32)])[0]
+            arr_2 = np.array(em_file[name], dtype=np.float32)
+            if flag:
+                print(arr_1)
+                print(type(arr_1))
+                print(np.concatenate([arr_1, arr_2]).shape)
+                flag = False
             self.data.append({
                 'Label': l,
-                'Data': np.concatenate(arr_1, arr_2)
+                'Data': np.concatenate([arr_1, arr_2])
             })
 
     def __len__(self):
@@ -111,8 +126,8 @@ class InputData(Dataset):
         if torch.is_tensor(idx):
             idx = idx.tolist()
 
-        label_out = torch.tensor(self.data[idx]['Label'], device=device)
-        data_out = torch.tensor(self.data[idx]['Data'], device=device)
+        label_out = torch.tensor(self.data[idx]['Label'], device=device).long()
+        data_out = torch.tensor(self.data[idx]['Data'], device=device).float()
 
         return data_out, label_out
 
@@ -152,7 +167,7 @@ if not IS_TRAIN:
 for i in range(num_epochs):
     model.eval()
     print(f"Epoch {i} train acc.: {eval_acc(model, dl_train, device):.3f} "
-            f"test acc.: {eval_acc(model, dl_test, device):.3f}"
+            f"test acc.: {eval_acc(model, dl_test, device):.3f} "
             f"val acc.: {eval_acc(model, dl_val, device):.3f}")
 
     if IS_TRAIN:
