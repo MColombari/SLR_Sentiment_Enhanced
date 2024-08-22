@@ -28,18 +28,20 @@ class LabelSmoothingCrossEntropy(nn.Module):
         return loss.mean()
 
 # Path setting
-exp_name = 'rgb_final_test'
-data_path = "../data/train_frames"
-data_path2 = "../data/test_frames"
-label_train_path = "data/train_labels.csv"
-label_val_path = "data/test_labels_pseudo.csv"
-model_path = "checkpoint/{}".format(exp_name)
-if not os.path.exists(model_path):
-    os.mkdir(model_path)
-if not os.path.exists(os.path.join('results', exp_name)):
-    os.mkdir(os.path.join('results', exp_name))
-log_path = "log/sign_resnet2d+1_{}_{:%Y-%m-%d_%H-%M-%S}.log".format(exp_name, datetime.now())
-sum_path = "runs/sign_resnet2d+1_{}_{:%Y-%m-%d_%H-%M-%S}".format(exp_name, datetime.now())
+exp_name = 'rgb_test_custom_dataset'
+result_path = '/work/cvcs2024/SLR_sentiment_enhanced/SLRSE_model_data/Ensemble/Conv3D'
+data_path = "/work/cvcs2024/SLR_sentiment_enhanced/SLRSE_model_data/data-prepare/train_frames/WLASL"
+data_path2 = "/work/cvcs2024/SLR_sentiment_enhanced/SLRSE_model_data/data-prepare/val_frames/custom"
+label_train_path = "/work/cvcs2024/SLR_sentiment_enhanced/datasets/WLASL/WLASL/start_kit/labels/train_labels.csv"
+label_val_path = "/work/cvcs2024/SLR_sentiment_enhanced/datasets/custom/label.csv"
+model_path = "/work/cvcs2024/SLR_sentiment_enhanced/SLRSE_model_data/Conv3D/model/checkpoint/{}".format(exp_name)
+#if not os.path.exists(model_path):
+#    os.mkdir(model_path)
+if not os.path.exists(os.path.join(result_path, exp_name)):
+    os.mkdir(os.path.join(result_path, exp_name))
+log_path = "/work/cvcs2024/SLR_sentiment_enhanced/SLRSE_model_data/Conv3D/log/sign_resnet2d+1_{}_{:%Y-%m-%d_%H-%M-%S}.log".format(exp_name, datetime.now())
+sum_path = "/work/cvcs2024/SLR_sentiment_enhanced/SLRSE_model_data/Conv3D/runs/sign_resnet2d+1_{}_{:%Y-%m-%d_%H-%M-%S}".format(exp_name, datetime.now())
+pretrained_path = "/work/cvcs2024/SLR_sentiment_enhanced/SLRSE_model_data/Conv3D/model/checkpoint/rgb_training/sign_resnet2d+1_epoch341.pth"
 phase = 'Test'
 # Log to file & tensorboard writer
 logging.basicConfig(level=logging.INFO, format='%(message)s', handlers=[logging.FileHandler(log_path), logging.StreamHandler()])
@@ -49,12 +51,12 @@ writer = SummaryWriter(sum_path)
 
 # Use specific gpus
 # os.environ["CUDA_VISIBLE_DEVICES"]="4,5,6,7"
-os.environ["CUDA_VISIBLE_DEVICES"]="0,1,2,3"
+os.environ["CUDA_VISIBLE_DEVICES"]="0,1"
 # Device setting
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 # Hyperparams
-num_classes = 226 #100
+num_classes = 2000 #100
 epochs = 100
 # batch_size = 16
 batch_size = 24
@@ -92,12 +94,13 @@ if __name__ == '__main__':
     # model = resnet50(pretrained=True, progress=True, sample_size=sample_size, sample_duration=sample_duration,
     #                 attention=attention, num_classes=num_classes).to(device)
 
-    model = r2plus1d_18(pretrained=True, num_classes=226)
-    # load pretrained
-    checkpoint = torch.load('final_models_finetuned/rgb_final_finetuned.pth')
+    model = r2plus1d_18(pretrained=True, num_classes=num_classes)
 
+    # load pretrained
+    checkpoint = torch.load(pretrained_path)
+    model_dict = checkpoint['model_dict']
     new_state_dict = OrderedDict()
-    for k, v in checkpoint.items():
+    for k, v in model_dict.items():
         name = k[7:] # remove 'module.'
         new_state_dict[name]=v
     model.load_state_dict(new_state_dict)
@@ -130,11 +133,16 @@ if __name__ == '__main__':
             val_loss = val_epoch(model, criterion, val_loader, device, epoch, logger, writer)
             scheduler.step(val_loss)
             
-            # Save model
-            torch.save(model.state_dict(), os.path.join(model_path, "sign_resnet2d+1_epoch{:03d}.pth".format(epoch+1)))
-            logger.info("Epoch {} Model Saved".format(epoch+1).center(60, '#'))
+            # Save model every 10 epochs 
+            if epoch % 10 == 0:
+                # save model state and epoch number
+                torch.save({
+                    'epoch': epoch,
+                    'model_dict':model.state_dict()}, 
+                    os.path.join(model_path, "sign_resnet2d+1_epoch{:03d}.pth".format(epoch+1)))
+                logger.info("Epoch {} Model Saved".format(epoch+1).center(60, '#'))
     elif phase == 'Test':
         logger.info("Testing Started".center(60, '#'))
-        val_loss = val_epoch(model, criterion, val_loader, device, 0, logger, writer, phase=phase, exp_name=exp_name)
+        val_loss = val_epoch(model, criterion, val_loader, device, 0, logger, writer, phase=phase, exp_name=exp_name, result_path=result_path)
 
     logger.info("Finished".center(60, '#'))

@@ -239,12 +239,15 @@ class Video2Vec:
         npy = np.load(self.arg.feeder_args['data_path'])
     
 
-        label = open(self.arg.feeder_args['label_path'], 'rb')
-        label = np.array(pickle.load(label))
+        labels = open(self.arg.feeder_args['label_path'], 'rb')
+        labels = np.array(pickle.load(labels))
 
-        for i in tqdm(range(label.shape[1])):
+        for i in tqdm(range(labels.shape[1])):
             skels = npy[i]
-            name,_ = label[:, i]
+            
+            
+            name, l = labels[:, i]
+
 
             # pre proessing
             skels = torch.tensor(skels, dtype=torch.float32)
@@ -259,7 +262,12 @@ class Video2Vec:
             with torch.no_grad():
                     embed = self.model.embed(skels)
                     #print(f'embed.size:{embed.size()}')
-                    self.dataset[name] = embed
+
+                    
+                    # save the label and the tensor  
+                    self.dataset[name] = {'label':l}
+                    self.dataset[name]['tensor'] = embed
+                    #print(f'finish load: {self.dataset}')
 
     
     def save_dataset(self):
@@ -304,42 +312,123 @@ class Video2Vec:
         
         return embed
 
+
         
     
-    def similar_videos(self, target_file, n=None):
+    def similar_videos(self, target_file, label_file, out_folder, num_classes=2000, n=None):
         """
         Function for comparing target video to embedded videos dataset
 
         Parameters:
         -----------
-        target_video: str specifying the path of target file .npy to compare
+        target_video: string specifying the path of target file .npy to compare
             with the saved feature embedding dataset
-        n: int specifying the top n most similar images to return
+        label_file: string specifying the path of file .pkl
+        type: the type of selection for the target score  
+        n: int specifying the top n most similar videos to return
         """
        
-        
+        # load data and label 
         npy = np.load(target_file)
-        target_vec = self.embed_video(npy[1])
+
+        labels = open(label_file, 'rb')
+        labels = np.array(pickle.load(labels))
+
+        for i in tqdm(range(npy.shape[0])):
+            print(labels[0][i])
+            name= labels[0][i]
+            target_vec = self.embed_video(npy[i])
 
 
-        # initiate computation of consine similarity
-        cosine = nn.CosineSimilarity(dim=1)
+            # initiate computation of consine similarity
+            cosine = nn.CosineSimilarity(dim=1)
 
-        # iteratively store similarity of stored images to target image
-        sim_dict = {}
-        for k, v in self.dataset.items():
-            sim = cosine(v, target_vec)[0].item()
-            sim_dict[k] = sim
+            # iteratively store similarity of stored images to target image
+            sim_dict = {}
+            for k, v in self.dataset.items():
+                sim = cosine(v['tensor'], target_vec)[0].item()
+                sim_dict[k] = sim
 
-        # sort based on decreasing similarity
-        items = sim_dict.items()
-        sim_dict = {k: v for k, v in sorted(items, key=lambda i: i[1], reverse=True)}
+            # sort based on decreasing similarity
+            items = sim_dict.items()
+            sim_dict = {k: {'similarity':v} for k, v in sorted(items, key=lambda i: i[1], reverse=True)}
 
-        # cut to defined top k similar images
-        if n is not None:
-            sim_dict = dict(list(sim_dict.items())[: int(n)])
 
-        return sim_dict
+            # create the vector 
+            final_vec = np.zeros((6,num_classes), dtype=np.float32)
+
+
+            
+            # do the 1hot encoder vector 
+
+            # cut to defined top 1 video
+            sim_dict = dict(list(sim_dict.items())[:1])
+            for k in sim_dict.keys() & self.dataset.keys():
+                l_i = self.dataset[k]['label']
+            final_vec[0][l_i] = 1
+
+
+            
+            # do the top 5 video
+            sim_dict = dict(list(sim_dict.items())[:5])
+            for k in sim_dict.keys() & self.dataset.keys():
+                l_i = self.dataset[k]['label']
+                final_vec[1][l_i] = sim_dict[k]['similarity']
+
+
+            
+            # do the top 10 video
+            sim_dict = dict(list(sim_dict.items())[:10])
+            for k in sim_dict.keys() & self.dataset.keys():
+                l_i = self.dataset[k]['label']
+                final_vec[2][l_i] = sim_dict[k]['similarity']
+
+
+            # do the top 20 video
+            sim_dict = dict(list(sim_dict.items())[:20])
+            for k in sim_dict.keys() & self.dataset.keys():
+                l_i = self.dataset[k]['label']
+                final_vec[3][l_i] = sim_dict[k]['similarity']
+
+            
+            # fill with all the similarities
+            for k in sim_dict.keys() & self.dataset.keys():
+                l_i = self.dataset[k]['label']
+                if final_vec[4][l_i] != 0:
+                    if final_vec[4][l_i] < sim_dict[k]['similarity']:
+                        # we change the score
+                        final_vec[4][l_i] = sim_dict[k]['similarity']
+                else:
+                    final_vec[4][l_i] = sim_dict[k]['similarity']
+            
+            
+            # fill with all the similarities 
+            for k in sim_dict.keys() & self.dataset.keys():
+                l_i = self.dataset[k]['label']
+                if final_vec[5][l_i] != 0:
+                    # we do the mean 
+                    final_vec[5][l_i] = (sim_dict[k]['similarity'] + final_vec[5][l_i]) / 2
+                else:
+                    final_vec[5][l_i] = sim_dict[k]['similarity']
+                
+
+            names =  ['top1', 'top5', 'top10', 'top20', 'max_all','mean_all']
+
+            for part,filename in enumerate(names):
+                with open('{}/{}_embeddings.pkl'.format(out_folder, filename), 'wb') as f:
+                    pickle.dump((name, final_vec[part]), f)
+
+
+            print('finish process')
+
+            # cut to defined top k similar videos
+            #if n is not None:
+            #    sim_dict = dict(list(sim_dict.items())[: int(n)])
+        
+            # Add labels
+            #for k in sim_dict.keys() & self.dataset.keys():
+            #    sim_dict[k]['label'] = self.dataset[k]['label']
+
         
 
     
@@ -384,8 +473,13 @@ if __name__ == '__main__':
     init_seed(0)
     print(arg)
     processor = Video2Vec(arg)
-    #processor.load_dataset('/work/cvcs2024/SLR_sentiment_enhanced/SLRSE_model_data/Retrival/Embeddings/embeddings_27_2/bone_motion_embeddings.pt')
-    processor.start()
-    #topk_dict = processor.similar_videos(target_file='/work/cvcs2024/SLR_sentiment_enhanced/SLRSE_model_data/SL-GCN/sign/27/test_data_joint_motion.npy', n=10)
+    processor.load_dataset('/work/cvcs2024/SLR_sentiment_enhanced/SLRSE_model_data/Retrival/Embeddings/embeddings_w_labels_27_2/joint_embeddings.pt')
+    #processor.start()
+
+    processor.similar_videos(target_file='/work/cvcs2024/SLR_sentiment_enhanced/SLRSE_model_data/SL-GCN/sign/27/val_data_joint.npy',
+                                         label_file='/work/cvcs2024/SLR_sentiment_enhanced/SLRSE_model_data/SL-GCN/sign/27/val_label.pkl',
+                                         out_folder='/work/cvcs2024/SLR_sentiment_enhanced/SLRSE_model_data/Ensemble/Retrival/joint',
+                                        )
     #print(topk_dict)
 
+    
