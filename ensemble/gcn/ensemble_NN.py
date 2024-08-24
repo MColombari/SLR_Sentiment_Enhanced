@@ -11,9 +11,9 @@ from sklearn.preprocessing import normalize
 # Resources:
 #       https://machinelearningmastery.com/using-dropout-regularization-in-pytorch-models/
 
-EXP_NUMBER = 3100 # Epoch number
+EXP_NUMBER = '1000B' # Epoch number
 
-LOAD_MODEL_WEIGHT_PATH = "/work/cvcs2024/SLR_sentiment_enhanced/SLRSE_model_data/Ensemble/Ensemble_NN/weights/Exp1100.pt"
+LOAD_MODEL_WEIGHT_PATH = None
 PATH_EMOTIONS_TRAIN = "/work/cvcs2024/SLR_sentiment_enhanced/DAN/results/train.csv"
 PATH_EMOTIONS_TEST = "/work/cvcs2024/SLR_sentiment_enhanced/DAN/results/test.csv"
 PATH_EMOTIONS_VAL = "/work/cvcs2024/SLR_sentiment_enhanced/DAN/results/val.csv"
@@ -37,23 +37,21 @@ BATCH_SIZE = 64
 num_epochs = 2000
 num_fin = 2008
 num_classes = 2000
-num_hidden_1 = 2006
-num_hidden_2 = 2004
+num_hidden_1 = 2000
+# num_hidden_2 = 2004
 learning_rate = 0.01
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
 
 
 class MLP(nn.Module):
-    def __init__(self, num_fin: int, num_hidden_1: int,  num_hidden_2: int, num_classes: int):
+    def __init__(self, num_fin: int, num_hidden_1: int, num_classes: int):
         super(MLP, self).__init__()
         self.net = nn.Sequential(
             nn.Linear(num_fin, num_hidden_1),
             nn.ReLU(),
             nn.Dropout(DROP_OUT_PROB),
-            nn.Linear(num_hidden_1, num_hidden_2),
-            nn.ReLU(),
-            nn.Linear(num_hidden_2, num_classes)
+            nn.Linear(num_hidden_1, num_classes),
         )
 
     def forward(self, x: torch.Tensor):
@@ -151,7 +149,7 @@ dl_val = DataLoader(dataset=data_val, batch_size=BATCH_SIZE,
                      num_workers=0, drop_last=False, shuffle=False)
 
 
-model = MLP(num_fin, num_hidden_1, num_hidden_2, num_classes).to(device)
+model = MLP(num_fin, num_hidden_1, num_classes).to(device)
 loss_fun = nn.CrossEntropyLoss().to(device)
 opt = SGD(model.parameters(), learning_rate)
 
