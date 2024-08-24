@@ -14,4 +14,4 @@ python test.py \
     --dataset_path /work/cvcs2024/SLR_sentiment_enhanced/SLRSE_model_data/SSTCN/data/val_features \
     --checkpoint_model /work/cvcs2024/SLR_sentiment_enhanced/SLRSE_model_data/SSTCN/model/model_checkpoints/T_Pose_model_298_32.61904761904762.pth \
     --test_labels ./val_labels_WLASL.pkl \
-    --out_file /work/cvcs2024/SLR_sentiment_enhanced/SLRSE_model_data/Ensemble/SSTCN/val_out.plk
+    --out_file /work/cvcs2024/SLR_sentiment_enhanced/SLRSE_model_data/Ensemble/SSTCN/val_out.pkl

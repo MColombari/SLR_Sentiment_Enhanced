@@ -1,4 +1,4 @@
-Experiment_name: test_test_dataset_joint_motion
+Experiment_name: test_dataset_joint_motion_custom
 # feeder
 feeder: feeders.feeder.Feeder
 train_feeder_args:
@@ -14,13 +14,13 @@ train_feeder_args:
   is_vector: True
 
 test_feeder_args:
-  data_path: /work/cvcs2024/SLR_sentiment_enhanced/SLRSE_model_data/SL-GCN/sign/27/test_data_joint_motion.npy
+  data_path: /work/cvcs2024/SLR_sentiment_enhanced/SLRSE_model_data/SL-GCN/sign/27/custom/test_data_joint_motion_custom.npy
   label_path: /work/cvcs2024/SLR_sentiment_enhanced/SLRSE_model_data/SL-GCN/sign/27/test_label.pkl
   random_mirror: False
   normalization: True
   is_vector: True
   debug: False
-  
+
 # model
 model: model.decouple_gcn_attn.Model
 model_args:
@@ -31,7 +31,7 @@ model_args:
   groups: 16
   block_size: 41
   graph_args:
-    labeling_mode: 'spatial'
+    labeling_mode: "spatial"
 
 #optim
 weight_decay: 0.0001
@@ -39,7 +39,7 @@ base_lr: 0.01
 step: [50]
 
 # training
-device: [0,1]
+device: [0, 1]
 phase: test
 weights: /work/cvcs2024/SLR_sentiment_enhanced/model_weights/SL-GCN/New_check_point/2/joint_motion_27_2_finetune-749.pt
 keep_rate: 0.9

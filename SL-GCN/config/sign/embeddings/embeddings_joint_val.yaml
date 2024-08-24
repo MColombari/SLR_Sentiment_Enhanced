@@ -1,11 +1,11 @@
 Experiment_name: embeddings_w_labels_27_2
-output_name: bone_embeddings.pt
+output_name: joint_embeddings.pt
 
 # feeder
 feeder: feeders.feeder.Feeder
 feeder_args:
-  data_path: /work/cvcs2024/SLR_sentiment_enhanced/SLRSE_model_data/SL-GCN/sign/27/test_data_bone.npy
-  label_path: /work/cvcs2024/SLR_sentiment_enhanced/SLRSE_model_data/SL-GCN/sign/27/test_label.pkl
+  data_path: /work/cvcs2024/SLR_sentiment_enhanced/SLRSE_model_data/SL-GCN/sign/27/train_data_joint.npy
+  label_path: /work/cvcs2024/SLR_sentiment_enhanced/SLRSE_model_data/SL-GCN/sign/27/train_label.pkl
   random_mirror: False
   normalization: True
   is_vector: True
@@ -29,14 +29,15 @@ step: [50]
 
 # training
 device: 0
-weights: /work/cvcs2024/SLR_sentiment_enhanced/model_weights/SL-GCN/New_check_point/2/bone_27_2_finetune-749.pt
+weights: /work/cvcs2024/SLR_sentiment_enhanced/model_weights/SL-GCN/New_check_point/1/sign_joint_final-249.pt
 keep_rate: 0.9
 batch_size: 1
 nesterov: True
 warm_up_epoch: 0
 
 # retrival
-embeddings: /work/cvcs2024/SLR_sentiment_enhanced/SLRSE_model_data/Retrival/Embeddings/embeddings_w_labels_27_2/bone_embeddings.pt
+embeddings: /work/cvcs2024/SLR_sentiment_enhanced/SLRSE_model_data/Retrival/Embeddings/embeddings_w_labels_27_2/joint_embeddings.pt
 target_file: /work/cvcs2024/SLR_sentiment_enhanced/SLRSE_model_data/SL-GCN/sign/27/val_data_joint.npy
 label_file: /work/cvcs2024/SLR_sentiment_enhanced/SLRSE_model_data/SL-GCN/sign/27/val_label.pkl
-out_folder: /work/cvcs2024/SLR_sentiment_enhanced/SLRSE_model_data/Ensemble/Retrival/bone
+out_folder: /work/cvcs2024/SLR_sentiment_enhanced/SLRSE_model_data/Ensemble/Retrival/joint
+part: val
