@@ -1,4 +1,4 @@
-Experiment_name: test_test_dataset_bone
+Experiment_name: test_custom_dataset_bone
 
 # feeder
 feeder: feeders.feeder.Feeder
@@ -15,8 +15,8 @@ train_feeder_args:
   is_vector: True
 
 test_feeder_args:
-  data_path: /work/cvcs2024/SLR_sentiment_enhanced/SLRSE_model_data/SL-GCN/sign/27/test_data_bone.npy
-  label_path: /work/cvcs2024/SLR_sentiment_enhanced/SLRSE_model_data/SL-GCN/sign/27/test_label.pkl
+  data_path: /work/cvcs2024/SLR_sentiment_enhanced/SLRSE_model_data/SL-GCN/sign/27/custom/test_data_bone_custom.npy
+  label_path: /work/cvcs2024/SLR_sentiment_enhanced/SLRSE_model_data/SL-GCN/sign/27/custom/test_label_custom.pkl
   random_mirror: False
   normalization: True
   is_vector: True
