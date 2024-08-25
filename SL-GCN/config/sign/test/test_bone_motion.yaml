@@ -17,8 +17,6 @@ train_feeder_args:
 test_feeder_args:
   data_path: /work/cvcs2024/SLR_sentiment_enhanced/SLRSE_model_data/SL-GCN/sign/27/custom/test_data_bone_motion_custom.npy
   label_path: /work/cvcs2024/SLR_sentiment_enhanced/SLRSE_model_data/SL-GCN/sign/27/custom/test_label_custom.pkl
-  data_path: /work/cvcs2024/SLR_sentiment_enhanced/SLRSE_model_data/SL-GCN/sign/27/custom/test_data_bone_motion_custom.npy
-  label_path: /work/cvcs2024/SLR_sentiment_enhanced/SLRSE_model_data/SL-GCN/sign/27/custom/test_label_custom.pkl
   random_mirror: False
   normalization: True
   is_vector: True
