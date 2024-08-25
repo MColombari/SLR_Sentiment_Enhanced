@@ -4,3 +4,6 @@
 [submodule "DAN"]
 	path = DAN
 	url = https://github.com/yaoing/DAN.git
+[submodule "Depth-Anything"]
+	path = Depth-Anything
+	url = https://github.com/LiheYoung/Depth-Anything.git
