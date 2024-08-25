@@ -21,7 +21,7 @@ test_feeder_args:
   normalization: True
   is_vector: True
   debug: False
-  
+
 # model
 model: model.decouple_gcn_attn.Model
 model_args:
@@ -32,7 +32,7 @@ model_args:
   groups: 16
   block_size: 41
   graph_args:
-    labeling_mode: 'spatial'
+    labeling_mode: "spatial"
 
 #optim
 weight_decay: 0.0001
@@ -40,7 +40,7 @@ base_lr: 0.01
 step: [50]
 
 # training
-device: [0,1]
+device: [0, 1]
 phase: test
 weights: /work/cvcs2024/SLR_sentiment_enhanced/model_weights/SL-GCN/New_check_point/2/bone_27_2_finetune-749.pt
 keep_rate: 0.9

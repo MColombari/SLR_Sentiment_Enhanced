@@ -17,6 +17,8 @@ train_feeder_args:
 test_feeder_args:
   data_path: /work/cvcs2024/SLR_sentiment_enhanced/SLRSE_model_data/SL-GCN/sign/27/custom/test_data_joint_custom.npy
   label_path: /work/cvcs2024/SLR_sentiment_enhanced/SLRSE_model_data/SL-GCN/sign/27/custom/test_label_custom.pkl
+  data_path: /work/cvcs2024/SLR_sentiment_enhanced/SLRSE_model_data/SL-GCN/sign/27/custom/test_data_joint_custom.npy
+  label_path: /work/cvcs2024/SLR_sentiment_enhanced/SLRSE_model_data/SL-GCN/sign/27/custom/test_label_custom.pkl
   random_mirror: False
   normalization: True
   debug: False
@@ -31,7 +33,7 @@ model_args:
   groups: 16
   block_size: 41
   graph_args:
-    labeling_mode: 'spatial'
+    labeling_mode: "spatial"
 
 #optim
 weight_decay: 0.0001
@@ -39,7 +41,7 @@ base_lr: 0.01
 step: [50]
 
 # training
-device: [0,1]
+device: [0, 1]
 phase: test
 weights: /work/cvcs2024/SLR_sentiment_enhanced/model_weights/SL-GCN/New_check_point/1/sign_joint_final-249.pt
 keep_rate: 0.9
