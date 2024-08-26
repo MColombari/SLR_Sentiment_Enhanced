@@ -1,0 +1,11 @@
+target video: signer103_sample37
+name:signer105_sample5	label:1931	 similarity:0.9919607639312744
+name:signer11_sample996	label:882	 similarity:0.9918813705444336
+name:signer37_sample37	label:280	 similarity:0.9917800426483154
+name:signer32_sample62	label:298	 similarity:0.991722822189331
+name:signer9_sample1508	label:1926	 similarity:0.9916753768920898
+name:signer36_sample79	label:157	 similarity:0.9916598796844482
+name:signer9_sample553	label:639	 similarity:0.991620659828186
+name:signer89_sample14	label:439	 similarity:0.9916131496429443
+name:signer9_sample597	label:691	 similarity:0.991545557975769
+name:signer9_sample1399	label:1765	 similarity:0.9915170669555664

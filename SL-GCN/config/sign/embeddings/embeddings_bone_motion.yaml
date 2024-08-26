@@ -34,3 +34,9 @@ keep_rate: 0.9
 batch_size: 1
 nesterov: True
 warm_up_epoch: 0
+
+# retrival
+embeddings: /work/cvcs2024/SLR_sentiment_enhanced/SLRSE_model_data/Retrival/Embeddings/embeddings_w_labels_27_2/bone_motion_embeddings.pt
+target_file: /work/cvcs2024/SLR_sentiment_enhanced/SLRSE_model_data/SL-GCN/sign/27/val_data_bone_motion.npy
+label_file: /work/cvcs2024/SLR_sentiment_enhanced/SLRSE_model_data/SL-GCN/sign/27/val_label.pkl
+out_folder: /work/cvcs2024/SLR_sentiment_enhanced/SLRSE_model_data/Ensemble/Retrival/bone_motion
