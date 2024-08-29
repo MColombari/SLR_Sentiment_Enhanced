@@ -37,7 +37,7 @@ warm_up_epoch: 0
 
 # retrival
 embeddings: /work/cvcs2024/SLR_sentiment_enhanced/SLRSE_model_data/Retrival/Embeddings/embeddings_w_labels_27_2/joint_embeddings.pt
-target_file: /work/cvcs2024/SLR_sentiment_enhanced/SLRSE_model_data/SL-GCN/sign/27/train_data_joint.npy
-label_file: /work/cvcs2024/SLR_sentiment_enhanced/SLRSE_model_data/SL-GCN/sign/27/train_label.pkl
-out_folder: /work/cvcs2024/SLR_sentiment_enhanced/SLRSE_model_data/Ensemble/Retrival/joint
-part: train
+target_file: /work/cvcs2024/SLR_sentiment_enhanced/SLRSE_model_data/SL-GCN/sign/27/custom/test_data_joint_custom.npy
+label_file: /work/cvcs2024/SLR_sentiment_enhanced/SLRSE_model_data/SL-GCN/sign/27/custom/test_label_custom.pkl
+out_folder: /work/cvcs2024/SLR_sentiment_enhanced/SLRSE_model_data/Ensemble/Retrival/custom/joint
+part: test

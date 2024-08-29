@@ -12,9 +12,9 @@ from sklearn.preprocessing import normalize
 # Resources:
 #       https://machinelearningmastery.com/using-dropout-regularization-in-pytorch-models/
 
-EXP_NUMBER = '16000A' # Epoch number
+EXP_NUMBER = '10000_top1A' # Epoch number
 
-LOAD_MODEL_WEIGHT_PATH = "/work/cvcs2024/SLR_sentiment_enhanced/SLRSE_model_data/Ensemble/Ensemble_NN/weights_w_retrieval/Exp6000A.pt"
+LOAD_MODEL_WEIGHT_PATH = "/work/cvcs2024/SLR_sentiment_enhanced/SLRSE_model_data/Ensemble/Ensemble_NN/weights_w_retrieval/Exp10000_mean_allA.pt"
 PATH_EMOTIONS_TRAIN = "/work/cvcs2024/SLR_sentiment_enhanced/DAN/results/train.csv"
 PATH_EMOTIONS_TEST = "/work/cvcs2024/SLR_sentiment_enhanced/DAN/results/test.csv"
 PATH_EMOTIONS_VAL = "/work/cvcs2024/SLR_sentiment_enhanced/DAN/results/val.csv"
@@ -23,9 +23,9 @@ PATH_SCORE_GCN_TRAIN = "/work/cvcs2024/SLR_sentiment_enhanced/SLRSE_model_data/E
 PATH_SCORE_GCN_TEST = "/work/cvcs2024/SLR_sentiment_enhanced/SLRSE_model_data/Ensemble/Ensemble_NN/Training_data/test_dataset/gcn_ensembled.pkl"
 PATH_SCORE_GCN_VAL = "/work/cvcs2024/SLR_sentiment_enhanced/SLRSE_model_data/Ensemble/Ensemble_NN/Training_data/val_dataset/gcn_ensembled.pkl"
 
-PATH_RETRIEVAL_TRAIN = "/work/cvcs2024/SLR_sentiment_enhanced/SLRSE_model_data/Ensemble/Retrival/joint/top1/train_retrieval.pkl"
-PATH_RETRIEVAL_TEST = "/work/cvcs2024/SLR_sentiment_enhanced/SLRSE_model_data/Ensemble/Retrival/joint/top1/test_retrieval.pkl"
-PATH_RETRIEVAL_VAL = "/work/cvcs2024/SLR_sentiment_enhanced/SLRSE_model_data/Ensemble/Retrival/joint/top1/val_retrieval.pkl"
+PATH_RETRIEVAL_TRAIN = "/work/cvcs2024/SLR_sentiment_enhanced/SLRSE_model_data/Ensemble/Retrival/joint/mean_all/train_retrieval.pkl"
+PATH_RETRIEVAL_TEST = "/work/cvcs2024/SLR_sentiment_enhanced/SLRSE_model_data/Ensemble/Retrival/joint/mean_all/test_retrieval.pkl"
+PATH_RETRIEVAL_VAL = "/work/cvcs2024/SLR_sentiment_enhanced/SLRSE_model_data/Ensemble/Retrival/joint/mean_all/val_retrieval.pkl"
 
 PATH_LABEL_TRAIN = "/work/cvcs2024/SLR_sentiment_enhanced/datasets/WLASL/WLASL/start_kit/labels/train_labels.csv"
 PATH_LABEL_TEST = "/work/cvcs2024/SLR_sentiment_enhanced/datasets/WLASL/WLASL/start_kit/labels/test_labels.csv"
@@ -34,7 +34,7 @@ PATH_LABEL_VAL = "/work/cvcs2024/SLR_sentiment_enhanced/datasets/WLASL/WLASL/sta
 OUTPUT_WEIGHT_PATH = f"/work/cvcs2024/SLR_sentiment_enhanced/SLRSE_model_data/Ensemble/Ensemble_NN/weights_w_retrieval/Exp{EXP_NUMBER}.pt"
 OUTPUT_STATS_PATH = f'/work/cvcs2024/SLR_sentiment_enhanced/SLRSE_model_data/Ensemble/Ensemble_NN/weights_w_retrieval/stats/{EXP_NUMBER}_stats.csv'
 
-IS_TRAIN = True
+PART = 'test'
 
 SKIP_NAME = ['signer5_sample1557', 'signer11_sample59']
 
@@ -70,21 +70,45 @@ class MLP(nn.Module):
 
 
 def eval_acc(mlp: nn.Module, data_loader: torch.utils.data.DataLoader,
-             device: torch.device):
+             device: torch.device, part='train'):
 
-    correct = 0
-    total = 0
+    if part == 'train':
+        correct = 0
+        total = 0
 
-    with torch.no_grad():
-        for x, y in data_loader:
-            x, y = x.to(device), y.to(device)
-            y_pred = model(x)
-            y_pred_discr = torch.argmax(y_pred, dim=1)
-            acc = torch.sum((y_pred_discr == y).float())
-            correct += acc
-            total += y_pred.size(0)
+        with torch.no_grad():
+            for x, y in data_loader:
+                x, y = x.to(device), y.to(device)
+                y_pred = model(x)
+                y_pred_discr = torch.argmax(y_pred, dim=1)
+                acc = torch.sum((y_pred_discr == y).float())
+                correct += acc
+                total += y_pred.size(0)
 
-    return correct / total
+        return correct / total
+    elif part == 'test':
+        # testing 
+        right_num_e = total_num_e = right_num_5_e = 0
+        with torch.no_grad():
+            for x, y in data_loader:
+                x, y = x.to(device), y.to(device)
+                y_pred = model(x)
+                y_pred_discr = torch.argmax(y_pred, dim=1)
+                acc_top1 = torch.sum((y_pred_discr == y).float())
+                #print(y_pred_discr.size())
+                _, y_pred_top5 =  torch.topk(y_pred, k=5, dim=1)
+                #print(rank_5_e.size())
+                acc_top_5 = torch.sum(y.unsqueeze(1) == y_pred_top5).float()
+                
+                right_num_5_e += acc_top_5
+                right_num_e += acc_top1
+                total_num_e += y_pred.size(0)
+
+        acc_e = right_num_e / total_num_e
+        acc5_e = right_num_5_e / total_num_e
+        print(f"top1: {acc_e.item():.3f}\n"
+              f"top5: {acc5_e.item():.3f}")
+
 
 
 class InputData(Dataset):
@@ -114,7 +138,7 @@ class InputData(Dataset):
             for row in spamreader:
                 label[row[0]] = int(row[1])
 
-        flag = True
+        flag = False
         self.data = []
         for name, l in label.items():
             if name in SKIP_NAME:
@@ -178,7 +202,7 @@ model = MLP(num_fin, num_hidden_1, num_classes).to(device)
 
 
 loss_fun = nn.CrossEntropyLoss().to(device)
-opt = SGD(model.parameters(), lr=learning_rate)
+opt = SGD(model.parameters(), lr=learning_rate, weight_decay=weight_decay)
 
 
 #metrics 
@@ -192,12 +216,12 @@ if LOAD_MODEL_WEIGHT_PATH:
     model.load_state_dict(torch.load(LOAD_MODEL_WEIGHT_PATH))
 
 
-if not IS_TRAIN:
+if PART == 'test':
     num_epochs = 1
 
 for i in range(num_epochs):
     
-    if IS_TRAIN:
+    if PART == 'train':
         model.train()
         for x, y in dl_train:
             x, y = x.to(device), y.to(device)
@@ -209,30 +233,35 @@ for i in range(num_epochs):
             loss.backward()
             opt.step()
     
-    model.eval()
-    if len(accumulator) != 0:
-        losses.append(np.mean(accumulator))
-        accumulator.clear()
-        
-    train_acc = eval_acc(model, dl_train, device).cpu().detach().numpy()
-    train_accs.append(train_acc)
-    test_acc = eval_acc(model, dl_test, device).cpu().detach().numpy()
-    test_accs.append(test_acc)
-    val_acc = eval_acc(model, dl_val, device).cpu().detach().numpy()
-    val_accs.append(val_acc)
+        model.eval()
+        if len(accumulator) != 0:
+            losses.append(np.mean(accumulator))
+            accumulator.clear()
 
-    print(f"Epoch {i} train acc.: {train_acc:.3f} "
+        train_acc = eval_acc(model, dl_train, device).cpu().detach().numpy()
+        train_accs.append(train_acc)
+        test_acc = eval_acc(model, dl_test, device).cpu().detach().numpy()
+        test_accs.append(test_acc)
+        val_acc = eval_acc(model, dl_val, device).cpu().detach().numpy()
+        val_accs.append(val_acc)
+
+        print(f"Epoch {i} train acc.: {train_acc:.3f} "
             f"test acc.: {test_acc:.3f} "
             f"val acc.: {val_acc:.3f}")
+    elif PART == 'test':
+        print('Start testing')
+        model.eval()
+        eval_acc(model, dl_val, device, part='test')
+
         
 
-# Save at the end the weight and the stats 
-torch.save(model.state_dict(), OUTPUT_WEIGHT_PATH)
+# # Save at the end the weight and the stats 
+# torch.save(model.state_dict(), OUTPUT_WEIGHT_PATH)
 
-run_details = pd.DataFrame()
-run_details['train Loss'] = losses
-run_details['train Accuracy'] = train_accs
-run_details['test Accuracy'] = test_accs
-run_details['val Accuracy'] = val_accs
+# run_details = pd.DataFrame()
+# run_details['train Loss'] = losses
+# run_details['train Accuracy'] = train_accs
+# run_details['test Accuracy'] = test_accs
+# run_details['val Accuracy'] = val_accs
 
-run_details.to_csv(OUTPUT_STATS_PATH,index=True, index_label='epoch')
+# run_details.to_csv(OUTPUT_STATS_PATH,index=True, index_label='epoch')
