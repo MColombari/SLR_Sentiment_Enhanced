@@ -11,7 +11,7 @@ By [Mattia Colombari](https://github.com/MColombari), [Omayma Moussadek](https:/
 
 This repo contains the official code of [Skeleton Aware Multi-modal Sign Language Recognition (SAM-SLR)](https://arxiv.org/abs/2103.08833) that ranked 1st in [CVPR 2021 Challenge: Looking at People Large Scale Signer Independent Isolated Sign Language Recognition](http://chalearnlap.cvc.uab.es/challenge/43/description/) and our updated version for emotion enahcement.
 
-<img src="img/final_diagram_model.png" width = "300">
+<img src="img/final_diagram_model_mod.png" width = "500">
 
 [CVPR21 workshop paper](https://openaccess.thecvf.com/content/CVPR2021W/ChaLearn/papers/Jiang_Skeleton_Aware_Multi-Modal_Sign_Language_Recognition_CVPRW_2021_paper.pdf) / [arXiv preprint](https://arxiv.org/abs/2103.08833) / [YouTube](https://youtu.be/4SgXxM-B4EM)
 
