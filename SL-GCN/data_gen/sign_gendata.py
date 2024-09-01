@@ -84,7 +84,7 @@ if __name__ == '__main__':
     parser.add_argument('--data_path', default='/work/cvcs2024/SLR_sentiment_enhanced/SLRSE_model_data/data-prepare/demo/custom_dataset_depth_rotated_npy') #'train_npy/npy', 'va_npy/npy'
     #parser.add_argument('--label_path', default='../data/sign/27/test_labels.csv') # 'train_labels.csv', 'val_gt.csv', 'test_labels.csv'
     parser.add_argument('--label_path', default='/work/cvcs2024/SLR_sentiment_enhanced/datasets/custom/label.csv')
-    parser.add_argument('--out_folder', default='/work/cvcs2024/SLR_sentiment_enhanced/SLRSE_model_data/SL-GCN/sign/27/prova_depth')
+    parser.add_argument('--out_folder', default='/work/cvcs2024/SLR_sentiment_enhanced/SLRSE_model_data/SL-GCN/sign/27/prova_3d/all_joint/bin5')
     parser.add_argument('--part', default='test')
     parser.add_argument('--points', default='27')
 

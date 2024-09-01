@@ -10,4 +10,4 @@
 #SBATCH --error="run_output/error_test_rotated_joint.log"
 
 # training 
-python3 main.py --config="config/sign/test/test_rotated_joint.yaml"
+python3 main.py --config="config/sign/test/test_3d_normal_angles.yaml"
