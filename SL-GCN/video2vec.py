@@ -322,7 +322,7 @@ class Video2Vec:
 
         
     
-    def similar_videos(self, target_file, label_file, out_folder, partition, num_classes=2000, n=None):
+    def similar_videos(self, target_file, label_file, out_folder, partition, num_classes=2000, n=10, type=None):
         """
         Function for comparing target video to embedded videos dataset
 
@@ -341,11 +341,55 @@ class Video2Vec:
         labels = open(label_file, 'rb')
         labels = np.array(pickle.load(labels))
 
+        if type == 'inference':
+            with open('./output_{}.txt'.format(self.arg.output_name), 'w') as f:
+
+                random.seed(42)
+                # inference part
+                random_pick = random.randint(0, npy.shape[0])
+
+                target_vec = self.embed_video(npy[random_pick])
+                name = labels[0][random_pick]
+
+                f.write(f'target video: {name}\n')
+
+                cosine = nn.CosineSimilarity(dim=1)
+
+                # iteratively store similarity of stored images to target image
+                sim_dict = {}
+                for k, v in self.dataset.items():
+
+                    if k == name:
+                        print(f'sample {name} can not be store in the dict, because he his the target')
+                        continue
+                    sim = cosine(v['tensor'], target_vec)[0].item()
+                    sim_dict[k] = sim
+                # sort based on decreasing similarity
+
+                items = sim_dict.items()
+                sim_dict = {k: {'similarity':v} for k, v in sorted(items, key=lambda i: i[1], reverse=True)}
+
+                # do the top 10 videos
+                sim_dict = dict(list(sim_dict.items())[:n])
+
+                # add labels 
+                for k in sim_dict.keys() & self.dataset.keys():
+                    sim_dict[k]['label'] = self.dataset[k]['label']
+
+                for k in sim_dict.keys():
+                    l = sim_dict[k]['label']
+                    sim = sim_dict[k]['similarity']
+                    f.write(f'name:{k}\tlabel:{l}\t similarity:{sim}\n')
+                
+            f.close()
+
+            return
+            
         # create the vectors 
-        final_vec = np.zeros((npy.shape[0],3,num_classes), dtype=np.float32)
+        final_vec = np.zeros((npy.shape[0],2,num_classes), dtype=np.float32)
         
         
-        names =  ['top1', 'top10','mean_all']
+        names =  ['top20', 'top50']
 
         for part,filename in enumerate(names):
             # init the dict
@@ -375,10 +419,7 @@ class Video2Vec:
                 sim_dict = {k: {'similarity':v} for k, v in sorted(items, key=lambda i: i[1], reverse=True)}
 
 
-                # create the vectors 
-                #final_vec = np.zeros((5,num_classes), dtype=np.float32)
-
-
+            
 
                 # do the 1hot encoder vector 
                 
@@ -399,6 +440,21 @@ class Video2Vec:
                 if filename == 'top10':
                     # do the top 10 video
                     sim_dict_c = dict(list(sim_dict.items())[:10])
+                    for k in sim_dict_c.keys() & self.dataset.keys():
+                        l_i = int(self.dataset[k]['label'])
+                        final_vec[i,1,l_i] = sim_dict_c[k]['similarity']
+
+                if filename == 'top20':
+                    # do the top 10 video
+                    sim_dict_c = dict(list(sim_dict.items())[:20])
+                    for k in sim_dict_c.keys() & self.dataset.keys():
+                        l_i = int(self.dataset[k]['label'])
+                        final_vec[i,0,l_i] = sim_dict_c[k]['similarity']
+                
+
+                if filename == 'top50':
+                    # do the top 10 video
+                    sim_dict_c = dict(list(sim_dict.items())[:50])
                     for k in sim_dict_c.keys() & self.dataset.keys():
                         l_i = int(self.dataset[k]['label'])
                         final_vec[i,1,l_i] = sim_dict_c[k]['similarity']
@@ -500,7 +556,7 @@ if __name__ == '__main__':
                                 target_file=arg.target_file,
                                 label_file=arg.label_file,
                                 out_folder=arg.out_folder,
-                                partition=arg.part
+                                partition=arg.part,
                             )
     #print(topk_dict)
 
