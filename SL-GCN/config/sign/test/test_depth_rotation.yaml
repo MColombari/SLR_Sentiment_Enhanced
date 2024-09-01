@@ -1,14 +1,25 @@
-Experiment_name: embeddings_w_labels_27_2
-output_name: joint_embeddings.pt
+Experiment_name: train_test_final_result_joint_rotation
 
 # feeder
 feeder: feeders.feeder.Feeder
-feeder_args:
+train_feeder_args:
   data_path: /work/cvcs2024/SLR_sentiment_enhanced/SLRSE_model_data/SL-GCN/sign/27/train_data_joint.npy
   label_path: /work/cvcs2024/SLR_sentiment_enhanced/SLRSE_model_data/SL-GCN/sign/27/train_label.pkl
+  debug: False
+  random_choose: True
+  window_size: 50
+  random_shift: True
+  normalization: True
+  random_mirror: True
+  random_mirror_p: 0.5
+  is_vector: False
+
+test_feeder_args:
+  data_path: /work/cvcs2024/SLR_sentiment_enhanced/SLRSE_model_data/SL-GCN/sign/27/prova_depth/27/test_data_joint.npy
+  label_path: /work/cvcs2024/SLR_sentiment_enhanced/SLRSE_model_data/SL-GCN/sign/27/prova_depth/27/test_label.pkl
   random_mirror: False
   normalization: True
-  is_vector: True
+  debug: False
 
 # model
 model: model.decouple_gcn_attn.Model
@@ -20,7 +31,7 @@ model_args:
   groups: 16
   block_size: 41
   graph_args:
-    labeling_mode: "spatial"
+    labeling_mode: 'spatial'
 
 #optim
 weight_decay: 0.0001
@@ -28,16 +39,13 @@ base_lr: 0.01
 step: [50]
 
 # training
-device: 0
+device: [0,1]
+phase: test
 weights: /work/cvcs2024/SLR_sentiment_enhanced/model_weights/SL-GCN/New_check_point/1/sign_joint_final-249.pt
 keep_rate: 0.9
-batch_size: 1
+only_train_epoch: 1
+batch_size: 64
+test_batch_size: 64
+num_epoch: 100
 nesterov: True
 warm_up_epoch: 0
-
-# retrival
-embeddings: /work/cvcs2024/SLR_sentiment_enhanced/SLRSE_model_data/Retrival/Embeddings/embeddings_w_labels_27_2/joint_embeddings.pt
-target_file: /work/cvcs2024/SLR_sentiment_enhanced/SLRSE_model_data/SL-GCN/sign/27/custom/test_data_joint_custom.npy
-label_file: /work/cvcs2024/SLR_sentiment_enhanced/SLRSE_model_data/SL-GCN/sign/27/custom/test_label_custom.pkl
-out_folder: /work/cvcs2024/SLR_sentiment_enhanced/SLRSE_model_data/Ensemble/Retrival/custom/joint
-part: test

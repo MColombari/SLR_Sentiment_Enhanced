@@ -34,7 +34,7 @@ PATH_LABEL_VAL = "/work/cvcs2024/SLR_sentiment_enhanced/datasets/WLASL/WLASL/sta
 OUTPUT_WEIGHT_PATH = f"/work/cvcs2024/SLR_sentiment_enhanced/SLRSE_model_data/Ensemble/Ensemble_NN/weights_w_retrieval/Exp{EXP_NUMBER}.pt"
 OUTPUT_STATS_PATH = f'/work/cvcs2024/SLR_sentiment_enhanced/SLRSE_model_data/Ensemble/Ensemble_NN/weights_w_retrieval/stats/{EXP_NUMBER}_stats.csv'
 
-IS_TRAIN = True
+PART = 'test'
 
 SKIP_NAME = ['signer5_sample1557', 'signer11_sample59']
 
@@ -70,21 +70,45 @@ class MLP(nn.Module):
 
 
 def eval_acc(mlp: nn.Module, data_loader: torch.utils.data.DataLoader,
-             device: torch.device):
+             device: torch.device, part='train'):
 
-    correct = 0
-    total = 0
+    if part == 'train':
+        correct = 0
+        total = 0
 
-    with torch.no_grad():
-        for x, y in data_loader:
-            x, y = x.to(device), y.to(device)
-            y_pred = model(x)
-            y_pred_discr = torch.argmax(y_pred, dim=1)
-            acc = torch.sum((y_pred_discr == y).float())
-            correct += acc
-            total += y_pred.size(0)
+        with torch.no_grad():
+            for x, y in data_loader:
+                x, y = x.to(device), y.to(device)
+                y_pred = model(x)
+                y_pred_discr = torch.argmax(y_pred, dim=1)
+                acc = torch.sum((y_pred_discr == y).float())
+                correct += acc
+                total += y_pred.size(0)
 
-    return correct / total
+        return correct / total
+    elif part == 'test':
+        # testing 
+        right_num_e = total_num_e = right_num_5_e = 0
+        with torch.no_grad():
+            for x, y in data_loader:
+                x, y = x.to(device), y.to(device)
+                y_pred = model(x)
+                y_pred_discr = torch.argmax(y_pred, dim=1)
+                acc_top1 = torch.sum((y_pred_discr == y).float())
+                #print(y_pred_discr.size())
+                _, y_pred_top5 =  torch.topk(y_pred, k=5, dim=1)
+                #print(rank_5_e.size())
+                acc_top_5 = torch.sum(y.unsqueeze(1) == y_pred_top5).float()
+                
+                right_num_5_e += acc_top_5
+                right_num_e += acc_top1
+                total_num_e += y_pred.size(0)
+
+        acc_e = right_num_e / total_num_e
+        acc5_e = right_num_5_e / total_num_e
+        print(f"top1: {acc_e.item():.3f}\n"
+              f"top5: {acc5_e.item():.3f}")
+
 
 
 class InputData(Dataset):
@@ -114,7 +138,7 @@ class InputData(Dataset):
             for row in spamreader:
                 label[row[0]] = int(row[1])
 
-        flag = True
+        flag = False
         self.data = []
         for name, l in label.items():
             if name in SKIP_NAME:
@@ -192,7 +216,7 @@ if LOAD_MODEL_WEIGHT_PATH:
     model.load_state_dict(torch.load(LOAD_MODEL_WEIGHT_PATH))
 
 
-if not IS_TRAIN:
+if PART == 'test':
     num_epochs = 1
 
 for i in range(num_epochs):

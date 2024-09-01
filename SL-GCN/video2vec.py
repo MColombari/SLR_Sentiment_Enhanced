@@ -386,10 +386,10 @@ class Video2Vec:
             return
             
         # create the vectors 
-        final_vec = np.zeros((npy.shape[0],2,num_classes), dtype=np.float32)
+        final_vec = np.zeros((npy.shape[0],5,num_classes), dtype=np.float32)
         
         
-        names =  ['top20', 'top50']
+        names =  ['top1','top10','top20', 'top50','mean_all']
 
         for part,filename in enumerate(names):
             # init the dict
@@ -449,7 +449,7 @@ class Video2Vec:
                     sim_dict_c = dict(list(sim_dict.items())[:20])
                     for k in sim_dict_c.keys() & self.dataset.keys():
                         l_i = int(self.dataset[k]['label'])
-                        final_vec[i,0,l_i] = sim_dict_c[k]['similarity']
+                        final_vec[i,2,l_i] = sim_dict_c[k]['similarity']
                 
 
                 if filename == 'top50':
@@ -457,7 +457,7 @@ class Video2Vec:
                     sim_dict_c = dict(list(sim_dict.items())[:50])
                     for k in sim_dict_c.keys() & self.dataset.keys():
                         l_i = int(self.dataset[k]['label'])
-                        final_vec[i,1,l_i] = sim_dict_c[k]['similarity']
+                        final_vec[i,3,l_i] = sim_dict_c[k]['similarity']
 
                 if filename == 'max_all':
                     # fill with all the similarities
@@ -474,11 +474,11 @@ class Video2Vec:
                     # fill with all the similarities 
                     for k in sim_dict.keys() & self.dataset.keys():
                         l_i = int(self.dataset[k]['label'])
-                        if final_vec[i,2,l_i] != 0:
+                        if final_vec[i,4,l_i] != 0:
                             # we do the mean 
-                            final_vec[i,2,l_i] = (sim_dict[k]['similarity'] + final_vec[i,2,l_i]) / 2
+                            final_vec[i,4,l_i] = (sim_dict[k]['similarity'] + final_vec[i,4,l_i]) / 2
                         else:
-                            final_vec[i,2,l_i] = sim_dict[k]['similarity']
+                            final_vec[i,4,l_i] = sim_dict[k]['similarity']
 
                 # write in dict 
                 out_dict[name] = final_vec[i,part,:]
