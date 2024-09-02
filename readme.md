@@ -15,7 +15,7 @@ This repo contains the official code of [Skeleton Aware Multi-modal Sign Languag
 
 [CVPR21 workshop paper](https://openaccess.thecvf.com/content/CVPR2021W/ChaLearn/papers/Jiang_Skeleton_Aware_Multi-Modal_Sign_Language_Recognition_CVPRW_2021_paper.pdf) / [arXiv preprint](https://arxiv.org/abs/2103.08833) / [YouTube](https://youtu.be/4SgXxM-B4EM)
 
-original schema:
+### original schema and results:
 
 <img src="img/sam-slr.jpg" width = "300">
 <p>
