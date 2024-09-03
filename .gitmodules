@@ -2,7 +2,7 @@
 	path = data-prepare
 	url = https://github.com/MColombari/data-prepare.git
 [submodule "DAN"]
-	path = DAN
+	path = DAN_module/DAN
 	url = https://github.com/yaoing/DAN.git
 [submodule "Depth-Anything"]
 	path = Depth-Anything
