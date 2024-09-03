@@ -1,3 +1,5 @@
+This folder contains all the files used to extract emotion from facial expression in the dataset videos.
+
 For generating emotion:
 
 ```
