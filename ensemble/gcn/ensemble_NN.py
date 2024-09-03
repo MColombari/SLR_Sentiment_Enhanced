@@ -36,7 +36,7 @@ OUTPUT_STATS_PATH = f'/work/cvcs2024/SLR_sentiment_enhanced/SLRSE_model_data/Ens
 
 PART = 'test'
 
-SKIP_NAME = ['signer5_sample1557', 'signer11_sample59']
+SKIP_NAME = ['signer5_sample1557', 'signer11_sample59'] # Files name to skip, due to problems in dataset load.
 
 DROP_OUT_PROB = 0.2
 BATCH_SIZE = 64

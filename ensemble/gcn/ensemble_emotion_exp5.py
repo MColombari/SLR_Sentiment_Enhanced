@@ -12,7 +12,7 @@ import statistics
 
 EXPERIMENT_NUMBER = 5
 
-SIGNER_TO_EXLUDE = ['signer9']
+SIGNER_TO_EXLUDE = ['signer9']  # Sign language user to exclude.
 
 PATH_JOINT = "/work/cvcs2024/SLR_sentiment_enhanced/SLRSE_model_data/Ensemble/SL-GCN/joint/epoch_0_0.29526257803892764.pkl"
 PATH_JOINT_MOTION = "/work/cvcs2024/SLR_sentiment_enhanced/SLRSE_model_data/Ensemble/SL-GCN/joint_motion/epoch_0_0.08152772677194271.pkl"
