@@ -10,7 +10,7 @@ import cv2
 import torch
 from torchvision import transforms
 
-from DAN.networks.dan import DAN
+from DAN.networks.dan import DAN    # Import from DAN repositorie.
 from tqdm import tqdm
 
 import pandas as pd
