@@ -1,6 +1,6 @@
 # Sign Language Recognition Sentiment Enhanced
 
-By [Mattia Colombari](https://github.com/MColombari), [Omayma Moussadek](https://github.com/omaymaMoussadek) and [Nicolò Rossi](https://github.com/Rdm-Nico).
+By [Martina Colombari](https://github.com/MColombari), [Omayma Moussadek](https://github.com/omaymaMoussadek) and [Nicolò Rossi](https://github.com/Rdm-Nico).
 
 ![Python 3.7](https://img.shields.io/badge/Python-3.7-orange.svg)
 ![Packagist](https://img.shields.io/badge/Pytorch-1.7.1-orange.svg)
