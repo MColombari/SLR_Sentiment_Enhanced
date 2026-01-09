@@ -9,7 +9,15 @@ By [Martina Colombari](https://github.com/MColombari), [Omayma Moussadek](https:
 
 ---
 
+With this paper we would like to explore many different ways to enhance Sign Language Recognition, also known as SLR. We built the foundation of this project on an already working SLR system, we chose this particular implementation for its experimental approach with skeleton extraction, we’ll talk more about this later. So to enhance the prediction we work on 3 different solution:
+* Emotion enhancement: facial expression is often used in Sign language to convey better words, so words with emotional meaning after comes with the respective facial expression from the user. Hence detecting it can provide a better context to predict a word more accurately.
+* Skeleton rotation: as introduced earlier the foundation used for this project use a skeleton extraction to feed a Graph Convolutional Network, for this reason we would like to change the orientation of the skeleton in a manner that will always face the camera, by doing this we would like to make the system resilient to user orientation changes.
+* Similar Sign retrieval: from the high-level feature representation of the SL- GCN branch, we extract the embedding space, in which we are able to find similar video. This similarity provides more information to work in the pre- diction, hence could improve accuracy.
+In the following paragraphs we’ll explore how we started, how we implemented each component and we’ll talk about our results.
+
 This repo contains the official code of [Skeleton Aware Multi-modal Sign Language Recognition (SAM-SLR)](https://arxiv.org/abs/2103.08833) that ranked 1st in [CVPR 2021 Challenge: Looking at People Large Scale Signer Independent Isolated Sign Language Recognition](http://chalearnlap.cvc.uab.es/challenge/43/description/) and our updated version for emotion enahcement.
+
+For more information you can read the related (paper)[Final_Paper.pdf].
 
 <img src="img/final_diagram_model_mod.png" width = "500">
 
